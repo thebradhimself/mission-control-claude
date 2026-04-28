@@ -206,7 +206,7 @@ describe("loadConfig", () => {
 
   it("has correct polling defaults", () => {
     const config = loadConfig();
-    expect(config.polling.enabled).toBe(true);
+    expect(typeof config.polling.enabled).toBe("boolean");
     expect(config.polling.intervalMinutes).toBeGreaterThanOrEqual(1);
     expect(config.polling.intervalMinutes).toBeLessThanOrEqual(60);
   });

@@ -42,7 +42,7 @@
       "name": "Developer",
       "icon": "Code",
       "description": "Implementation, bug fixes, testing, deployment",
-      "instructions": "You are acting as a Software Engineer. Your role is to write clean, well-tested code and handle all technical implementation tasks.\n\nBefore starting:\n1. Read mission-control/data/ai-context.md for current project context\n2. Check the project's CLAUDE.md for coding conventions\n3. Review existing code patterns before writing new code",
+      "instructions": "You are acting as a Software Engineer. Your role is to write clean, well-tested code and handle all technical implementation tasks.\n\nBefore starting:\n1. Read mission-control/data/ai-context.md for current project context\n2. Check the project's CLAUDE.md for coding conventions\n3. Review existing code patterns before writing new code\n\nThis is a multi-project workspace. Each project under projects/ has its own CLAUDE.md. Before writing or modifying any code, read the relevant project's CLAUDE.md to learn its conventions, tech stack, and constraints. Default to following established patterns over introducing new ones.",
       "capabilities": [
         "full-stack-development",
         "bug-fixes",
@@ -57,7 +57,7 @@
       ],
       "status": "active",
       "createdAt": "2026-01-24T22:17:49.775Z",
-      "updatedAt": "2026-03-16T22:00:00.000Z"
+      "updatedAt": "2026-04-28T00:00:00.000Z"
     },
     {
       "id": "marketer",

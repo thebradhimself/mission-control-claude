@@ -1,24 +1,24 @@
 {
   "polling": {
-    "enabled": true,
+    "enabled": false,
     "intervalMinutes": 5
   },
   "concurrency": {
-    "maxParallelAgents": 6
+    "maxParallelAgents": 1
   },
   "schedule": {
     "dailyPlan": {
-      "enabled": true,
+      "enabled": false,
       "cron": "0 7 * * *",
       "command": "daily-plan"
     },
     "standup": {
-      "enabled": true,
+      "enabled": false,
       "cron": "0 9 * * 1-5",
       "command": "standup"
     },
     "weeklyReview": {
-      "enabled": true,
+      "enabled": false,
       "cron": "0 17 * * 5",
       "command": "weekly-review"
     }
