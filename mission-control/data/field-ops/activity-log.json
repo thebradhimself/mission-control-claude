@@ -1,1 +1,50 @@
-{ "events": [] }
+{
+  "events": [
+    {
+      "id": "fevt_lhyuSfRSVwlM",
+      "type": "credential_added",
+      "actor": "system",
+      "taskId": null,
+      "serviceId": null,
+      "summary": "Vault initialized with master password",
+      "details": "Master password set using scrypt KDF. Vault is ready for credential storage.",
+      "missionId": null,
+      "credentialId": null,
+      "metadata": null,
+      "timestamp": "2026-04-28T21:21:46.445Z"
+    },
+    {
+      "id": "fevt_hi3sWtU-Eucr",
+      "type": "mission_created",
+      "actor": "system",
+      "taskId": null,
+      "serviceId": null,
+      "missionId": "fmission_DLwg0zrM8wxM",
+      "summary": "Mission created: Realbum",
+      "details": "Mission \"Realbum\" (fmission_DLwg0zrM8wxM) was created with autonomy level \"full-autonomy\".",
+      "metadata": {
+        "autonomyLevel": "full-autonomy",
+        "linkedProjectId": "proj_wTniLxfD30Be",
+        "taskCount": 0
+      },
+      "credentialId": null,
+      "timestamp": "2026-04-28T22:12:41.150Z"
+    },
+    {
+      "id": "fevt_7rbbRIQ6imjz",
+      "type": "mission_deleted",
+      "actor": "system",
+      "taskId": null,
+      "serviceId": null,
+      "missionId": "fmission_DLwg0zrM8wxM",
+      "summary": "Mission deleted: Realbum",
+      "details": "Mission \"Realbum\" (fmission_DLwg0zrM8wxM) was deleted.",
+      "metadata": {
+        "orphanedTaskCount": 0,
+        "linkedProjectId": "proj_wTniLxfD30Be"
+      },
+      "credentialId": null,
+      "timestamp": "2026-04-28T22:16:58.740Z"
+    }
+  ]
+}

@@ -1,1 +1,29 @@
-{ "projects": [] }
+{
+  "projects": [
+    {
+      "id": "proj_wTniLxfD30Be",
+      "name": "reAlbum",
+      "description": "Flutter/Supabase mobile app for sharing monthly album picks with friends. Features: Spotify OAuth login, leagues, picks, ratings/reviews, friend system, push notifications, stats. Local path: /Users/bradleyhintze/workspace/projects/REalbum_leaguefeb2026/apps/mobile. QA session (2026-03-12): 93 checklist items — 52 passed, 12 failed, 8 blocked, 21 needs review. 12 open bugs logged in bug-log.md.",
+      "status": "active",
+      "color": "#06b6d4",
+      "teamMembers": [
+        "me",
+        "developer",
+        "researcher"
+      ],
+      "createdAt": "2026-04-28T21:22:55.897Z",
+      "tags": [
+        "mobile",
+        "flutter",
+        "spotify",
+        "supabase",
+        "riverpod",
+        "go_router",
+        "firebase",
+        "ios",
+        "android"
+      ],
+      "deletedAt": null
+    }
+  ]
+}
