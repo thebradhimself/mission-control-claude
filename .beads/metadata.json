@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "mission_control",
+  "project_id": "98a5dc2d-41fb-4aba-b460-bded65756fd8"
+}

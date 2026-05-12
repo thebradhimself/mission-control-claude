@@ -53,3 +53,8 @@ mission-control/data/missions.json
 
 # Research & marketing files (local only, not pushed to GitHub)
 research/
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
