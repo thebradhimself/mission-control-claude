@@ -34,7 +34,7 @@ export function ProjectTypeSelector({ value, onChange, id }: Props) {
           <SelectValue placeholder="Choose a type" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={NONE_VALUE}>
+          <SelectItem value={NONE_VALUE} textValue="Not set">
             <div className="flex items-center gap-2">
               <HelpCircle className="h-4 w-4 text-muted-foreground" />
               <span>Not set (defaults to software)</span>
@@ -43,7 +43,7 @@ export function ProjectTypeSelector({ value, onChange, id }: Props) {
           {(Object.keys(TYPE_META) as ProjectType[]).map((t) => {
             const { label, description, Icon } = TYPE_META[t];
             return (
-              <SelectItem key={t} value={t}>
+              <SelectItem key={t} value={t} textValue={label}>
                 <div className="flex items-center gap-2">
                   <Icon className="h-4 w-4" />
                   <div className="flex flex-col">
