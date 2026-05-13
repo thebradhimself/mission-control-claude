@@ -11,7 +11,7 @@ import { EditProjectDialog } from "@/components/edit-project-dialog";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useTasks, useGoals, useProjects, useAgents } from "@/hooks/use-data";
 import { Tip } from "@/components/ui/tip";
-import type { Project, ProjectStatus } from "@/lib/types";
+import type { Project, ProjectStatus, ProjectType } from "@/lib/types";
 import { useActiveRunsContext as useActiveRuns } from "@/providers/active-runs-provider";
 import { ProjectCardSkeleton } from "@/components/skeletons";
 import { ErrorState } from "@/components/error-state";
@@ -28,7 +28,7 @@ export default function ProjectsPage() {
   const [deletingProjectId, setDeletingProjectId] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
 
-  const handleCreateProject = async (data: { name: string; description: string; color: string; tags: string; teamMembers?: string[] }) => {
+  const handleCreateProject = async (data: { name: string; description: string; color: string; tags: string; teamMembers?: string[]; type: ProjectType | null }) => {
     await createProject({
       id: `proj_${Date.now()}`,
       name: data.name,
@@ -37,6 +37,7 @@ export default function ProjectsPage() {
       color: data.color,
       teamMembers: data.teamMembers ?? [],
       tags: data.tags.split(",").map((t) => t.trim()).filter(Boolean),
+      type: data.type,
       createdAt: new Date().toISOString(),
     });
   };
@@ -48,6 +49,7 @@ export default function ProjectsPage() {
     color: string;
     teamMembers: string[];
     tags: string[];
+    type: ProjectType | null;
   }) => {
     if (!editingProject) return;
     await updateProject(editingProject.id, data);
