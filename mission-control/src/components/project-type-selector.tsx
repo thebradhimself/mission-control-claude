@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { Code2, FileText, Briefcase, HelpCircle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
@@ -20,14 +21,16 @@ const TYPE_META: Record<ProjectType, { label: string; description: string; Icon:
 const NONE_VALUE = "__none__";
 
 export function ProjectTypeSelector({ value, onChange, id }: Props) {
+  const generatedId = useId();
+  const resolvedId = id ?? generatedId;
   return (
     <div className="space-y-1.5">
-      <Label htmlFor={id ?? "project-type"}>Project type</Label>
+      <Label htmlFor={resolvedId}>Project type</Label>
       <Select
         value={value ?? NONE_VALUE}
         onValueChange={(v) => onChange(v === NONE_VALUE ? null : (v as ProjectType))}
       >
-        <SelectTrigger id={id ?? "project-type"}>
+        <SelectTrigger id={resolvedId}>
           <SelectValue placeholder="Choose a type" />
         </SelectTrigger>
         <SelectContent>
