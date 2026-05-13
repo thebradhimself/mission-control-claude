@@ -50,9 +50,7 @@ const BUSINESS_SPECIFIC: SpecSection[] = [
 
 function assemble(type: ProjectType, specific: SpecSection[]): SpecTemplate {
   // Order: snapshot · vision (specific) · the rest of specific · open questions · recent activity
-  const snapshot = UNIVERSAL_SECTIONS[0];
-  const openQuestions = UNIVERSAL_SECTIONS[1];
-  const recentActivity = UNIVERSAL_SECTIONS[2];
+  const [snapshot, openQuestions, recentActivity] = UNIVERSAL_SECTIONS;
   return {
     type,
     sections: [snapshot, ...specific, openQuestions, recentActivity],

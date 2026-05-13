@@ -49,4 +49,18 @@ describe("spec templates", () => {
       "Initiatives", "Decisions made", "Open questions", "Recent activity",
     ]));
   });
+
+  it("orders software template sections: snapshot → vision → specific → open questions → recent activity", () => {
+    const headings = getTemplate("software").sections.map((s) => s.heading);
+    expect(headings).toEqual([
+      "Status snapshot",
+      "Vision",
+      "Feature set",
+      "What's done",
+      "In flight",
+      "Planned",
+      "Open questions",
+      "Recent activity",
+    ]);
+  });
 });
