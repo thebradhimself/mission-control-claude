@@ -9,6 +9,7 @@ const kanbanEnum = z.enum(["not-started", "in-progress", "done"]);
 const goalTypeEnum = z.enum(["long-term", "medium-term"]);
 const goalStatusEnum = z.enum(["not-started", "in-progress", "completed"]);
 const projectStatusEnum = z.enum(["active", "paused", "completed", "archived"]);
+const projectTypeEnum = z.enum(["software", "content", "business"]);
 // Relaxed from fixed enum to string — validated against agent registry at runtime.
 const agentRoleEnum = z.string().min(1).max(50);
 const actorEnum = z.string().min(1).max(50);
@@ -172,6 +173,7 @@ export const projectCreateSchema = z.object({
   color: z.string().max(20).optional().default("#6B7280"),
   teamMembers: z.array(z.string().max(50)).max(20).optional().default([]),
   tags: z.array(z.string().max(LIMITS.TAG)).max(LIMITS.MAX_TAGS).optional().default([]),
+  type: projectTypeEnum.nullable().optional().default(null),
   deletedAt: z.string().nullable().optional().default(null),
 });
 
@@ -183,6 +185,7 @@ export const projectUpdateSchema = z.object({
   color: z.string().max(20).optional(),
   teamMembers: z.array(z.string().max(50)).max(20).optional(),
   tags: z.array(z.string().max(LIMITS.TAG)).max(LIMITS.MAX_TAGS).optional(),
+  type: projectTypeEnum.nullable().optional(),
   deletedAt: z.string().nullable().optional(),
 });
 

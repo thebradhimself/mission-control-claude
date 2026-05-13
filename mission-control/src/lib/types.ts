@@ -4,6 +4,7 @@ export type KanbanStatus = "not-started" | "in-progress" | "done";
 export type GoalType = "long-term" | "medium-term";
 export type GoalStatus = "not-started" | "in-progress" | "completed";
 export type ProjectStatus = "active" | "paused" | "completed" | "archived";
+export type ProjectType = "software" | "content" | "business";
 // AgentRole is now a string validated against the agent registry at runtime.
 // Built-in roles are kept as a type for backward compatibility.
 export type BuiltInAgentRole = "me" | "researcher" | "developer" | "marketer" | "business-analyst";
@@ -219,6 +220,7 @@ export interface Project {
   teamMembers: string[];
   createdAt: string;
   tags: string[];
+  type: ProjectType | null;
   deletedAt: string | null;
 }
 

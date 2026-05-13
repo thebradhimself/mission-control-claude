@@ -158,6 +158,7 @@ describe("getProjects / saveProjects", () => {
       teamMembers: [],
       createdAt: new Date().toISOString(),
       tags: [],
+      type: null,
       deletedAt: null,
     };
 

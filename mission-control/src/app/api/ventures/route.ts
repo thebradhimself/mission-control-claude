@@ -63,6 +63,7 @@ export async function POST(request: Request) {
       teamMembers: body.teamMembers,
       createdAt: new Date().toISOString(),
       tags: body.tags,
+      type: body.type ?? null,
       deletedAt: null,
     };
     data.projects.push(project);
