@@ -50,12 +50,13 @@ export function ChatTab({ projectId }: Props) {
             )}
           </div>
         )}
-        {error && (
-          <p className="mt-2 rounded border border-destructive/40 bg-destructive/5 px-2 py-1 text-xs text-destructive">
-            {error}
-          </p>
-        )}
       </ScrollArea>
+
+      {error && (
+        <p className="mx-3 mb-1 rounded border border-destructive/40 bg-destructive/5 px-2 py-1 text-xs text-destructive">
+          {error}
+        </p>
+      )}
 
       <ChatComposer onSend={send} sending={sending} disabled={loading} />
     </div>

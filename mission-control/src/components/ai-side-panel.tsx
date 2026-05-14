@@ -18,10 +18,10 @@ export function AISidePanel({ projectId }: Props) {
           <TabsTrigger value="chat" className="text-xs">Chat</TabsTrigger>
           <TabsTrigger value="annotations" className="text-xs">Annotations</TabsTrigger>
         </TabsList>
-        <TabsContent value="chat" className="flex-1 overflow-hidden">
+        <TabsContent value="chat" className="mt-0 flex-1 overflow-hidden">
           <ChatTab projectId={projectId} />
         </TabsContent>
-        <TabsContent value="annotations" className="flex-1 overflow-hidden p-3">
+        <TabsContent value="annotations" className="mt-0 flex-1 overflow-hidden p-3">
           <p className="text-xs text-muted-foreground">
             The annotation queue lands in Plan 4. For now, manage annotations inline on the Spec tab.
           </p>
