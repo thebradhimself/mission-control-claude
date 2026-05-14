@@ -739,3 +739,28 @@ export interface Annotation {
 export interface AnnotationsFile {
   annotations: Annotation[];
 }
+
+// ─── AI chat threads ──────────────────────────────────────────────────────────
+
+export type ChatRole = "user" | "assistant";
+
+export interface ChatContextSnapshot {
+  specHash: string | null;     // sha1 of the spec markdown at send time, or null if no spec yet
+  taskCount: number;
+  activityRange: [string, string] | null; // ISO start/end bounds of activity included
+}
+
+export interface ChatMessage {
+  id: string;
+  role: ChatRole;
+  content: string;
+  createdAt: string;
+  contextSnapshot?: ChatContextSnapshot; // assistant turns only
+}
+
+export interface ChatThread {
+  projectId: string;
+  messages: ChatMessage[];
+  createdAt: string;
+  updatedAt: string;
+}

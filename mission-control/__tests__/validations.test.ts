@@ -19,6 +19,7 @@ import {
   activityEventCreateSchema,
   annotationCreateSchema,
   annotationUpdateSchema,
+  chatSendSchema,
   LIMITS,
 } from "@/lib/validations";
 
@@ -849,6 +850,39 @@ describe("annotationUpdateSchema", () => {
 
   it("rejects unknown status values", () => {
     const result = annotationUpdateSchema.safeParse({ status: "deleted" });
+    expect(result.success).toBe(false);
+  });
+});
+
+// ─── Chat Send Schema ──────────────────────────────────────────────────────
+
+describe("chatSendSchema", () => {
+  it("accepts a minimal valid chat send", () => {
+    const result = chatSendSchema.safeParse({
+      projectId: "proj_1",
+      message: "What's the status of the deploy task?",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects empty message", () => {
+    const result = chatSendSchema.safeParse({
+      projectId: "proj_1",
+      message: "",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects missing projectId", () => {
+    const result = chatSendSchema.safeParse({ message: "hi" });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects message over the configured limit", () => {
+    const result = chatSendSchema.safeParse({
+      projectId: "proj_1",
+      message: "x".repeat(20_001),
+    });
     expect(result.success).toBe(false);
   });
 });
