@@ -36,6 +36,7 @@ import { Users, X } from "lucide-react";
 import { RunButton } from "@/components/run-button";
 import { ProjectRunProgress } from "@/components/mission-progress";
 import { LivingSpec } from "@/components/living-spec";
+import { AISidePanel } from "@/components/ai-side-panel";
 
 function DraggableTask({ task, onClick, isRunning, onRun, pendingDecisionTaskIds }: { task: Task; onClick: () => void; isRunning?: boolean; onRun?: (taskId: string) => void; pendingDecisionTaskIds?: Set<string> }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: task.id });
@@ -171,7 +172,8 @@ export default function ProjectDetailPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
+      <div className="space-y-4 min-w-0">
       <BreadcrumbNav items={[{ label: "Ventures", href: "/ventures" }, { label: project.name }]} />
 
       {/* Project Header */}
@@ -453,6 +455,9 @@ export default function ProjectDetailPage() {
           onClose={() => setSelectedTask(null)}
         />
       )}
+      </div>
+
+      <AISidePanel projectId={projectId} />
 
       <CreateTaskDialog
         open={showCreateTask}
