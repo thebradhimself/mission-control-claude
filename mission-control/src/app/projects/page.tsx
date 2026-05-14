@@ -15,6 +15,8 @@ import type { Project, ProjectStatus } from "@/lib/types";
 import { useActiveRunsContext as useActiveRuns } from "@/providers/active-runs-provider";
 import { ProjectCardSkeleton } from "@/components/skeletons";
 import { ErrorState } from "@/components/error-state";
+import { apiFetch } from "@/lib/api-client";
+import { showError, showSuccess } from "@/lib/toast";
 
 export default function ProjectsPage() {
   const { projects, loading, create: createProject, update: updateProject, remove: deleteProject, error: projectsError, refetch: refetchProjects } = useProjects();
@@ -39,6 +41,25 @@ export default function ProjectsPage() {
       tags: data.tags.split(",").map((t) => t.trim()).filter(Boolean),
       createdAt: new Date().toISOString(),
     });
+  };
+
+  const handleImportDirectory = async (data: { directory: string; color: string; createTasks: boolean }) => {
+    try {
+      const res = await apiFetch("/api/ventures/import-directory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.details || json.error || "Failed to import directory");
+      }
+      await refetchProjects();
+      showSuccess(`Imported ${json.project?.name ?? "venture"} from directory`);
+    } catch (error) {
+      showError(error instanceof Error ? error.message : "Failed to import directory");
+      throw error;
+    }
   };
 
   const handleEditProject = async (data: {
@@ -153,6 +174,7 @@ export default function ProjectsPage() {
         open={showCreateProject}
         onOpenChange={setShowCreateProject}
         onSubmit={handleCreateProject}
+        onImportDirectory={handleImportDirectory}
       />
 
       {editingProject && (

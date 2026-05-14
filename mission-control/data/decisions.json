@@ -1,1 +1,68 @@
-{ "decisions": [] }
+{
+  "decisions": [
+    {
+      "id": "dec_1778535618733",
+      "requestedBy": "researcher",
+      "taskId": "task_e6qpvWib1h6W",
+      "question": "Task \"Run and record the current build result with pnpm build\" has failed 3 times. How should I proceed?",
+      "options": [
+        "Retry with a different approach",
+        "Skip this task and continue mission",
+        "Stop the entire mission"
+      ],
+      "context": "Last error: Not logged in · Please run /login\n\nAttempt history: 3 attempts. The agent \"researcher\" has been unable to complete this task.",
+      "status": "answered",
+      "answer": "retry again",
+      "answeredAt": "2026-05-11T21:42:28.448Z",
+      "createdAt": "2026-05-11T21:40:18.733Z"
+    },
+    {
+      "id": "dec_1778535711974",
+      "requestedBy": "researcher",
+      "taskId": "task_3jKOIRkThcwS",
+      "question": "Task \"Run the test suite and capture failures with pnpm test\" has failed 3 times. How should I proceed?",
+      "options": [
+        "Retry with a different approach",
+        "Skip this task and continue mission",
+        "Stop the entire mission"
+      ],
+      "context": "Last error: Not logged in · Please run /login\n\nAttempt history: 3 attempts. The agent \"researcher\" has been unable to complete this task.",
+      "status": "answered",
+      "answer": "retry again",
+      "answeredAt": "2026-05-11T21:42:25.445Z",
+      "createdAt": "2026-05-11T21:41:51.974Z"
+    },
+    {
+      "id": "dec_1778535811054",
+      "requestedBy": "developer",
+      "taskId": "task_ZQfAvQAKRoCa",
+      "question": "Task \"Triage TODO/FIXME markers into explicit Mission Control tasks\" has failed 3 times. How should I proceed?",
+      "options": [
+        "Retry with a different approach",
+        "Skip this task and continue mission",
+        "Stop the entire mission"
+      ],
+      "context": "Last error: Not logged in · Please run /login\n\nAttempt history: 3 attempts. The agent \"developer\" has been unable to complete this task.",
+      "status": "pending",
+      "answer": null,
+      "answeredAt": null,
+      "createdAt": "2026-05-11T21:43:31.054Z"
+    },
+    {
+      "id": "dec_1778535907335",
+      "requestedBy": "developer",
+      "taskId": "task_aO_5VJFO6VgW",
+      "question": "Task \"Verify the main user flows across desktop and mobile viewports\" has failed 3 times. How should I proceed?",
+      "options": [
+        "Retry with a different approach",
+        "Skip this task and continue mission",
+        "Stop the entire mission"
+      ],
+      "context": "Last error: Not logged in · Please run /login\n\nAttempt history: 3 attempts. The agent \"developer\" has been unable to complete this task.",
+      "status": "pending",
+      "answer": null,
+      "answeredAt": null,
+      "createdAt": "2026-05-11T21:45:07.335Z"
+    }
+  ]
+}

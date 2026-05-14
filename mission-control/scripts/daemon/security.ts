@@ -107,7 +107,7 @@ export function validateBinary(binary: string): boolean {
 
 /**
  * Build a safe environment for child processes.
- * Passes PATH, HOME/USERPROFILE, APPDATA, TEMP, and on Windows,
+ * Passes PATH, HOME/USERPROFILE, USER/LOGNAME, APPDATA, TEMP, and on Windows,
  * SystemRoot/WINDIR/COMSPEC/PATHEXT (required for node.exe).
  * Strips all other env vars to prevent credential leakage.
  */
@@ -123,6 +123,12 @@ export function buildSafeEnv(opts?: { agentTeams?: boolean }): Record<string, st
   const home = process.env.HOME || process.env.USERPROFILE;
   if (home) safeEnv.HOME = home;
   if (process.env.USERPROFILE) safeEnv.USERPROFILE = process.env.USERPROFILE;
+
+  // Preserve non-secret user identity hints. Claude Code uses USER on macOS
+  // when resolving the logged-in account context even when HOME is present.
+  if (process.env.USER) safeEnv.USER = process.env.USER;
+  if (process.env.LOGNAME) safeEnv.LOGNAME = process.env.LOGNAME;
+  if (process.env.USERNAME) safeEnv.USERNAME = process.env.USERNAME;
 
   // Preserve APPDATA for Windows applications
   if (process.env.APPDATA) safeEnv.APPDATA = process.env.APPDATA;

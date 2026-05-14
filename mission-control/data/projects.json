@@ -24,6 +24,106 @@
         "android"
       ],
       "deletedAt": null
+    },
+    {
+      "id": "proj_laeenFFdAVUX",
+      "name": "mission-control",
+      "description": "mission-control appears to be a web app in qa hardening. Primary stack: Next.js, React, TypeScript, Tailwind CSS, Vitest. Scanned 287 files with 244 source files, 8 tests, 1 docs, and 10 TODO/FIXME markers.\n\nScan risks: No major structural risks were detected by the local scan.\n\nRecommended next steps: Run and record the current build result with pnpm build. Run the test suite and capture failures with pnpm test. Triage TODO/FIXME markers into explicit Mission Control tasks.",
+      "status": "active",
+      "color": "#6366f1",
+      "teamMembers": [
+        "me",
+        "developer",
+        "business-analyst"
+      ],
+      "createdAt": "2026-05-11T20:30:46.851Z",
+      "tags": [
+        "web-app",
+        "next-js",
+        "react",
+        "typescript",
+        "tailwind-css",
+        "vitest",
+        "qa-hardening"
+      ],
+      "sourceDirectory": "/Users/bradleyhintze/workspace/projects/mission-control-claude/mission-control",
+      "analysis": {
+        "sourceDirectory": "/Users/bradleyhintze/workspace/projects/mission-control-claude/mission-control",
+        "scannedAt": "2026-05-11T20:30:46.851Z",
+        "category": "Web app",
+        "developmentStage": "qa-hardening",
+        "confidence": "high",
+        "summary": "mission-control appears to be a web app in qa hardening. Primary stack: Next.js, React, TypeScript, Tailwind CSS, Vitest. Scanned 287 files with 244 source files, 8 tests, 1 docs, and 10 TODO/FIXME markers.",
+        "stack": [
+          "Next.js",
+          "React",
+          "TypeScript",
+          "Tailwind CSS",
+          "Vitest"
+        ],
+        "packageManagers": [
+          "pnpm"
+        ],
+        "commands": {
+          "install": "pnpm install",
+          "dev": "pnpm dev",
+          "build": "pnpm build",
+          "test": "pnpm test",
+          "lint": "pnpm lint"
+        },
+        "counts": {
+          "filesScanned": 287,
+          "directoriesScanned": 113,
+          "sourceFiles": 244,
+          "testFiles": 8,
+          "docsFiles": 1,
+          "configFiles": 6,
+          "todoMarkers": 10
+        },
+        "signals": [
+          "Detected stack: Next.js, React, TypeScript, Tailwind CSS, Vitest",
+          "Package manager: pnpm",
+          "Dev command available: pnpm dev",
+          "Build command available: pnpm build",
+          "Test command available: pnpm test",
+          "8 test files found",
+          "README or primary docs found"
+        ],
+        "risks": [
+          "No major structural risks were detected by the local scan."
+        ],
+        "recommendations": [
+          "Run and record the current build result with pnpm build.",
+          "Run the test suite and capture failures with pnpm test.",
+          "Triage TODO/FIXME markers into explicit Mission Control tasks.",
+          "Verify the main user flows across desktop and mobile viewports."
+        ],
+        "notableFiles": [
+          "README.md",
+          "eslint.config.mjs",
+          "next.config.ts",
+          "package.json",
+          "pnpm-workspace.yaml",
+          "tailwind.config.ts",
+          "tsconfig.json",
+          "vitest.config.ts",
+          "__tests__/daemon.test.ts",
+          "__tests__/data.test.ts",
+          "__tests__/helpers.ts",
+          "__tests__/security.test.ts",
+          "__tests__/validations.test.ts",
+          "scripts/test-restricted-auth.js",
+          "__tests__/integration/agent-flow.test.ts",
+          "src/app/api/field-ops/services/test/route.ts"
+        ],
+        "generatedTasks": [
+          "Run and record the current build result with pnpm build.",
+          "Run the test suite and capture failures with pnpm test.",
+          "Triage TODO/FIXME markers into explicit Mission Control tasks.",
+          "Verify the main user flows across desktop and mobile viewports."
+        ]
+      },
+      "deletedAt": null
     }
   ]
 }

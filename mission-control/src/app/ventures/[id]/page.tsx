@@ -14,7 +14,7 @@ import {
   type DragStartEvent,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import { Plus } from "lucide-react";
+import { AlertTriangle, CheckCircle2, FileSearch, Plus, Terminal } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -277,6 +277,7 @@ export default function ProjectDetailPage() {
           <TabsTrigger value="priority-matrix">Priority Matrix</TabsTrigger>
           <TabsTrigger value="status-board">Status Board</TabsTrigger>
           <TabsTrigger value="milestones">Milestones</TabsTrigger>
+          {project.analysis && <TabsTrigger value="scan">Scan</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="priority-matrix">
@@ -320,6 +321,118 @@ export default function ProjectDetailPage() {
             </div>
           )}
         </TabsContent>
+
+        {project.analysis && (
+          <TabsContent value="scan">
+            <div className="grid gap-3 lg:grid-cols-[1.2fr_0.8fr]">
+              <Card>
+                <CardContent className="space-y-4 p-4">
+                  <div className="flex items-start gap-3">
+                    <FileSearch className="mt-0.5 h-4 w-4 text-primary" />
+                    <div className="space-y-1">
+                      <h2 className="text-sm font-semibold">Directory Analysis</h2>
+                      <p className="text-sm text-muted-foreground">{project.analysis.summary}</p>
+                      <p className="text-xs text-muted-foreground">{project.analysis.sourceDirectory}</p>
+                    </div>
+                  </div>
+                  <div className="grid gap-2 sm:grid-cols-4">
+                    {[
+                      ["Stage", project.analysis.developmentStage.replace(/-/g, " ")],
+                      ["Category", project.analysis.category],
+                      ["Confidence", project.analysis.confidence],
+                      ["Scanned", new Date(project.analysis.scannedAt).toLocaleString()],
+                    ].map(([label, value]) => (
+                      <div key={label} className="rounded-lg border bg-muted/20 p-3">
+                        <div className="text-xs text-muted-foreground">{label}</div>
+                        <div className="mt-1 text-sm font-medium capitalize">{value}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
+                    {[
+                      ["Files", project.analysis.counts.filesScanned],
+                      ["Source", project.analysis.counts.sourceFiles],
+                      ["Tests", project.analysis.counts.testFiles],
+                      ["Docs", project.analysis.counts.docsFiles],
+                      ["Config", project.analysis.counts.configFiles],
+                      ["TODOs", project.analysis.counts.todoMarkers],
+                    ].map(([label, value]) => (
+                      <div key={label} className="rounded-lg border p-3 text-center">
+                        <div className="text-base font-semibold tabular-nums">{value}</div>
+                        <div className="text-xs text-muted-foreground">{label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {project.analysis.stack.map((item) => (
+                      <Badge key={item} variant="secondary">{item}</Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="space-y-4 p-4">
+                  <div className="flex items-center gap-2">
+                    <Terminal className="h-4 w-4 text-primary" />
+                    <h2 className="text-sm font-semibold">Commands</h2>
+                  </div>
+                  <div className="space-y-2">
+                    {Object.entries(project.analysis.commands).map(([label, command]) => (
+                      command ? (
+                        <div key={label} className="flex items-center justify-between gap-3 rounded-md border px-3 py-2">
+                          <span className="text-xs font-medium capitalize text-muted-foreground">{label}</span>
+                          <code className="text-xs">{command}</code>
+                        </div>
+                      ) : null
+                    ))}
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-xs font-semibold text-muted-foreground">Notable files</h3>
+                    <div className="max-h-40 space-y-1 overflow-auto rounded-md border p-2">
+                      {project.analysis.notableFiles.map((file) => (
+                        <div key={file} className="truncate text-xs text-muted-foreground">{file}</div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="space-y-3 p-4">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    <h2 className="text-sm font-semibold">Signals</h2>
+                  </div>
+                  <ul className="space-y-2">
+                    {project.analysis.signals.map((signal) => (
+                      <li key={signal} className="text-sm text-muted-foreground">{signal}</li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="space-y-3 p-4">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-amber-600" />
+                    <h2 className="text-sm font-semibold">Risks and Next Steps</h2>
+                  </div>
+                  <div className="space-y-3">
+                    {project.analysis.risks.map((risk) => (
+                      <p key={risk} className="text-sm text-muted-foreground">{risk}</p>
+                    ))}
+                  </div>
+                  <div className="space-y-2 border-t pt-3">
+                    {project.analysis.recommendations.map((recommendation) => (
+                      <div key={recommendation} className="text-sm">{recommendation}</div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        )}
       </Tabs>
 
       {/* Task Detail Panel */}

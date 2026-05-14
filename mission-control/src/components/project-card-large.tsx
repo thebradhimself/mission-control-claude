@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MoreHorizontal, Archive, Trash2, Pencil } from "lucide-react";
+import { FileSearch, MoreHorizontal, Archive, Trash2, Pencil } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -125,6 +125,15 @@ export function ProjectCardLarge({ project, tasks, goals, isRunning, isProjectRu
           </div>
           {project.description && (
             <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{project.description}</p>
+          )}
+          {project.analysis && (
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              <Badge variant="secondary" className="gap-1 text-xs capitalize">
+                <FileSearch className="h-3 w-3" />
+                {project.analysis.developmentStage.replace(/-/g, " ")}
+              </Badge>
+              <Badge variant="outline" className="text-xs">{project.analysis.category}</Badge>
+            </div>
           )}
         </CardHeader>
         <CardContent className="space-y-3">

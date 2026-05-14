@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { X, Users } from "lucide-react";
+import { FolderInput, Loader2, X, Users } from "lucide-react";
 import { useAgents } from "@/hooks/use-data";
 import { getAgentIcon } from "@/lib/agent-icons";
 
@@ -26,9 +26,10 @@ interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: { name: string; description: string; color: string; tags: string; teamMembers: string[] }) => void;
+  onImportDirectory?: (data: { directory: string; color: string; createTasks: boolean }) => Promise<void>;
 }
 
-export function CreateProjectDialog({ open, onOpenChange, onSubmit }: CreateProjectDialogProps) {
+export function CreateProjectDialog({ open, onOpenChange, onSubmit, onImportDirectory }: CreateProjectDialogProps) {
   const { agents } = useAgents();
   const activeAgents = agents.filter((a) => a.status === "active");
 
@@ -37,6 +38,8 @@ export function CreateProjectDialog({ open, onOpenChange, onSubmit }: CreateProj
   const [color, setColor] = useState(PROJECT_COLORS[0]);
   const [tags, setTags] = useState("");
   const [teamMembers, setTeamMembers] = useState<string[]>([]);
+  const [directory, setDirectory] = useState("");
+  const [importing, setImporting] = useState(false);
 
   const toggleTeamMember = (agentId: string) => {
     setTeamMembers((prev) =>
@@ -56,13 +59,55 @@ export function CreateProjectDialog({ open, onOpenChange, onSubmit }: CreateProj
     onOpenChange(false);
   };
 
+  const handleImportDirectory = async () => {
+    if (!directory.trim() || !onImportDirectory || importing) return;
+    setImporting(true);
+    try {
+      await onImportDirectory({ directory: directory.trim(), color, createTasks: true });
+      setDirectory("");
+      onOpenChange(false);
+    } finally {
+      setImporting(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Create Venture</DialogTitle>
           <DialogDescription>A venture is a business, product, or initiative you&apos;re building. Group related tasks, assign agents, and track progress.</DialogDescription>
         </DialogHeader>
+        {onImportDirectory && (
+          <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
+            <div className="flex items-center gap-2">
+              <FolderInput className="h-4 w-4 text-primary" />
+              <Label htmlFor="proj-directory" className="text-sm font-medium">Import from directory</Label>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                id="proj-directory"
+                value={directory}
+                onChange={(e) => setDirectory(e.target.value)}
+                placeholder="/Users/bradleyhintze/workspace/projects/my-app"
+                disabled={importing}
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleImportDirectory}
+                disabled={!directory.trim() || importing}
+                className="gap-1.5"
+              >
+                {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FolderInput className="h-3.5 w-3.5" />}
+                Scan
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Scans structure, docs, package scripts, tests, Git state, and code markers, then creates a venture with follow-up tasks.
+            </p>
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="proj-name">Name</Label>

@@ -11,6 +11,7 @@ import {
   validateBinary,
   buildSafeEnv,
 } from "../scripts/daemon/security";
+import { parseClaudeAuthStatus } from "../scripts/daemon/runner";
 
 describe("scrubCredentials", () => {
   it("redacts sk- style API keys", () => {
@@ -161,7 +162,8 @@ describe("buildSafeEnv", () => {
 
     // Should only contain safe keys
     const allowedKeys = [
-      "PATH", "Path", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TEMP", "TMP",
+      "PATH", "Path", "HOME", "USERPROFILE", "USER", "LOGNAME", "USERNAME",
+      "APPDATA", "LOCALAPPDATA", "TEMP", "TMP",
       // Windows system vars (only present on win32)
       "SystemRoot", "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
       // Agent Teams flag
@@ -188,6 +190,42 @@ describe("buildSafeEnv", () => {
     } else {
       process.env.API_KEY = originalApiKey;
     }
+  });
+});
+
+describe("parseClaudeAuthStatus", () => {
+  it("parses logged-in auth status without exposing identity fields", () => {
+    const result = parseClaudeAuthStatus(JSON.stringify({
+      loggedIn: true,
+      authMethod: "claude.ai",
+      apiProvider: "firstParty",
+      email: "person@example.com",
+      orgName: "Example Org",
+    }));
+
+    expect(result).toEqual({
+      loggedIn: true,
+      authMethod: "claude.ai",
+      apiProvider: "firstParty",
+    });
+  });
+
+  it("parses logged-out auth status", () => {
+    const result = parseClaudeAuthStatus(JSON.stringify({
+      loggedIn: false,
+      authMethod: "none",
+      apiProvider: "firstParty",
+    }));
+
+    expect(result).toEqual({
+      loggedIn: false,
+      authMethod: "none",
+      apiProvider: "firstParty",
+    });
+  });
+
+  it("returns null for non-json output", () => {
+    expect(parseClaudeAuthStatus("Not logged in")).toBeNull();
   });
 });
 

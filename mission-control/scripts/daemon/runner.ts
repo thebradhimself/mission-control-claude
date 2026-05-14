@@ -1,4 +1,4 @@
-import { spawn, execSync, type ChildProcess } from "child_process";
+import { spawn, spawnSync, execSync, type ChildProcess } from "child_process";
 import { existsSync, readFileSync } from "fs";
 import path from "path";
 import { logger } from "./logger";
@@ -11,6 +11,7 @@ import treeKill from "tree-kill";
 
 const WORKSPACE_ROOT = path.resolve(__dirname, "../../..");
 const MAX_STDOUT_SIZE = 10_000_000; // 10MB max captured output
+export const CLAUDE_AUTH_ERROR_PREFIX = "Claude Code is not authenticated in the daemon environment";
 
 // ─── Claude Binary Detection ─────────────────────────────────────────────────
 
@@ -210,6 +211,68 @@ export function parseClaudeOutput(stdout: string): ClaudeOutputMeta {
   }
 }
 
+interface ClaudeAuthStatus {
+  loggedIn: boolean;
+  authMethod: string | null;
+  apiProvider: string | null;
+}
+
+export function parseClaudeAuthStatus(stdout: string): ClaudeAuthStatus | null {
+  try {
+    const parsed = JSON.parse(stdout) as Record<string, unknown>;
+    if (typeof parsed.loggedIn !== "boolean") return null;
+
+    return {
+      loggedIn: parsed.loggedIn,
+      authMethod: typeof parsed.authMethod === "string" ? parsed.authMethod : null,
+      apiProvider: typeof parsed.apiProvider === "string" ? parsed.apiProvider : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function buildAuthFailureMessage(status: ClaudeAuthStatus | null, output: string): string {
+  const details = status
+    ? `authMethod=${status.authMethod ?? "unknown"}, apiProvider=${status.apiProvider ?? "unknown"}`
+    : `unable to parse auth status output: ${scrubCredentials(output).slice(0, 200) || "no output"}`;
+
+  const hint = process.env.CODEX_SANDBOX
+    ? "This process is running inside a sandbox that cannot access the Claude login. Start Mission Control and the daemon from a normal terminal, then retry."
+    : "Run `claude auth status` from the same terminal or process manager that starts Mission Control, then restart the daemon.";
+
+  return `${CLAUDE_AUTH_ERROR_PREFIX} (${details}). ${hint}`;
+}
+
+export function assertClaudeAuthenticated(opts?: { agentTeams?: boolean }): void {
+  const resolved = findClaudeBinary();
+
+  if (!validateBinary(resolved.originalPath)) {
+    throw new Error(`Security: binary "${resolved.originalPath}" is not in the allowed list`);
+  }
+
+  const safeEnv = buildSafeEnv({ agentTeams: opts?.agentTeams });
+  const result = spawnSync(resolved.bin, [...resolved.prefixArgs, "auth", "status"], {
+    cwd: WORKSPACE_ROOT,
+    env: safeEnv as NodeJS.ProcessEnv,
+    encoding: "utf-8",
+    timeout: 10_000,
+    windowsHide: true,
+  });
+
+  if (result.error) {
+    throw new Error(`${CLAUDE_AUTH_ERROR_PREFIX}: unable to run \`claude auth status\` (${result.error.message}).`);
+  }
+
+  const stdout = typeof result.stdout === "string" ? result.stdout.trim() : "";
+  const stderr = typeof result.stderr === "string" ? result.stderr.trim() : "";
+  const status = parseClaudeAuthStatus(stdout);
+
+  if (status?.loggedIn) return;
+
+  throw new Error(buildAuthFailureMessage(status, stdout || stderr));
+}
+
 // ─── Agent Runner ────────────────────────────────────────────────────────────
 
 export class AgentRunner {
@@ -229,6 +292,8 @@ export class AgentRunner {
     if (!validateBinary(resolved.originalPath)) {
       throw new Error(`Security: binary "${resolved.originalPath}" is not in the allowed list`);
     }
+
+    assertClaudeAuthenticated({ agentTeams: opts.agentTeams });
 
     // Build args array (NOT string interpolation — prevents shell injection)
     // prefixArgs contains the JS entry point when spawning via node.exe

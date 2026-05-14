@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Plus, BookOpen, Tag, Terminal, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import { Tip } from "@/components/ui/tip";
 import { useSkills, useAgents } from "@/hooks/use-data";
 import { SkillCardSkeleton } from "@/components/skeletons";
 import { ErrorState } from "@/components/error-state";
+import { SkillDetailDialog } from "@/components/skill-detail-dialog";
 import { SKILLS } from "@/lib/types";
 import type { SkillDefinition } from "@/lib/types";
 
@@ -29,53 +29,63 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
-function SkillCard({ skill, agentNames }: { skill: SkillDefinition; agentNames: string[] }) {
+function SkillCard({
+  skill,
+  agentNames,
+  onClick,
+}: {
+  skill: SkillDefinition;
+  agentNames: string[];
+  onClick: () => void;
+}) {
   return (
-    <Link href={`/skills/${skill.id}`}>
-      <div className="group rounded-xl border bg-card p-5 transition-all hover:shadow-md hover:border-primary/30">
-        <div className="flex items-start justify-between">
-          <div>
-            <h3 className="font-semibold text-sm group-hover:text-primary transition-colors">
-              {skill.name}
-            </h3>
-            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-              {skill.description}
-            </p>
-          </div>
-          <BookOpen className="h-4 w-4 text-muted-foreground shrink-0" />
+    <button
+      type="button"
+      onClick={onClick}
+      className="group text-left rounded-xl border bg-card p-5 transition-all hover:shadow-md hover:border-primary/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="font-semibold text-sm group-hover:text-primary transition-colors">
+            {skill.name}
+          </h3>
+          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+            {skill.description}
+          </p>
         </div>
+        <BookOpen className="h-4 w-4 text-muted-foreground shrink-0" />
+      </div>
 
-        {/* Agents assigned */}
-        {agentNames.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-3">
-            {agentNames.map((name) => (
-              <Badge key={name} variant="outline" className="text-[10px] px-1.5 py-0">
-                {name}
+      {/* Agents assigned */}
+      {agentNames.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-3">
+          {agentNames.map((name) => (
+            <Badge key={name} variant="outline" className="text-[10px] px-1.5 py-0">
+              {name}
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      {/* Tags */}
+      {skill.tags.length > 0 && (
+        <div className="flex items-center gap-1 mt-2">
+          <Tag className="h-3 w-3 text-muted-foreground" />
+          <div className="flex flex-wrap gap-1">
+            {skill.tags.map((tag) => (
+              <Badge key={tag} variant="secondary" className="text-[10px] px-1.5 py-0">
+                {tag}
               </Badge>
             ))}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Tags */}
-        {skill.tags.length > 0 && (
-          <div className="flex items-center gap-1 mt-2">
-            <Tag className="h-3 w-3 text-muted-foreground" />
-            <div className="flex flex-wrap gap-1">
-              {skill.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-[10px] px-1.5 py-0">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Content preview */}
-        <p className="text-xs text-muted-foreground mt-3 pt-3 border-t line-clamp-2 font-mono">
-          {skill.content.slice(0, 120)}...
-        </p>
-      </div>
-    </Link>
+      {/* Content preview */}
+      <p className="text-xs text-muted-foreground mt-3 pt-3 border-t line-clamp-2 font-mono">
+        {skill.content.slice(0, 120)}...
+      </p>
+    </button>
   );
 }
 
@@ -83,6 +93,7 @@ export default function SkillsPage() {
   const { skills, loading, error: skillsError, refetch } = useSkills();
   const { agents } = useAgents();
   const router = useRouter();
+  const [selectedSkill, setSelectedSkill] = useState<SkillDefinition | null>(null);
 
   const getAgentNames = (agentIds: string[]) =>
     agentIds.map((id) => agents.find((a) => a.id === id)?.name ?? id);
@@ -142,10 +153,20 @@ export default function SkillsPage() {
               key={skill.id}
               skill={skill}
               agentNames={getAgentNames(skill.agentIds)}
+              onClick={() => setSelectedSkill(skill)}
             />
           ))}
         </div>
       )}
+
+      <SkillDetailDialog
+        skill={selectedSkill}
+        agentNames={selectedSkill ? getAgentNames(selectedSkill.agentIds) : []}
+        open={selectedSkill !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedSkill(null);
+        }}
+      />
 
       {/* AI Commands (slash commands) */}
       <div className="rounded-xl border bg-card">

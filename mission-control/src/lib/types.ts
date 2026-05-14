@@ -4,6 +4,13 @@ export type KanbanStatus = "not-started" | "in-progress" | "done";
 export type GoalType = "long-term" | "medium-term";
 export type GoalStatus = "not-started" | "in-progress" | "completed";
 export type ProjectStatus = "active" | "paused" | "completed" | "archived";
+export type ProjectDevelopmentStage =
+  | "discovery"
+  | "prototype"
+  | "active-development"
+  | "qa-hardening"
+  | "launch-ready"
+  | "maintenance";
 // AgentRole is now a string validated against the agent registry at runtime.
 // Built-in roles are kept as a type for backward compatibility.
 export type BuiltInAgentRole = "me" | "researcher" | "developer" | "marketer" | "business-analyst";
@@ -219,11 +226,45 @@ export interface Project {
   teamMembers: string[];
   createdAt: string;
   tags: string[];
+  sourceDirectory?: string;
+  analysis?: ProjectDirectoryAnalysis;
   deletedAt: string | null;
 }
 
 export interface ProjectsFile {
   projects: Project[];
+}
+
+export interface ProjectDirectoryAnalysis {
+  sourceDirectory: string;
+  scannedAt: string;
+  category: string;
+  developmentStage: ProjectDevelopmentStage;
+  confidence: "low" | "medium" | "high";
+  summary: string;
+  stack: string[];
+  packageManagers: string[];
+  commands: {
+    install?: string;
+    dev?: string;
+    build?: string;
+    test?: string;
+    lint?: string;
+  };
+  counts: {
+    filesScanned: number;
+    directoriesScanned: number;
+    sourceFiles: number;
+    testFiles: number;
+    docsFiles: number;
+    configFiles: number;
+    todoMarkers: number;
+  };
+  signals: string[];
+  risks: string[];
+  recommendations: string[];
+  notableFiles: string[];
+  generatedTasks: string[];
 }
 
 // ─── Brain Dump ───────────────────────────────────────────────────────────────

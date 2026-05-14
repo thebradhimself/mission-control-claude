@@ -236,9 +236,9 @@
       "taskId": "task_Df57xtgZF-Iu",
       "subject": "Completed: [BUG-011] User can find and add themselves as a friend",
       "body": "All three layers of the fix are in place:\n\n**BUG-011 fix summary:**\n\nThe bug existed because `searchUsers` (at build `8f5c428`) queried all profiles with no self-exclusion, and `sendFriendRequest` had no guard against self-friending.\n\n**Changes applied (all in the working tree, verified clean):**\n\n1. **`friends_repository.dart` — `searchUsers`** (line 56): Added `.where((profile) => profile.id != userId)` to exclude the current user from results. The current user never appears in the search shee",
-      "status": "unread",
+      "status": "read",
       "createdAt": "2026-04-28T22:19:43.179Z",
-      "readAt": null
+      "readAt": "2026-05-11T19:45:08.391Z"
     },
     {
       "id": "msg_1777414928373",
@@ -248,9 +248,9 @@
       "taskId": "task_wNFY-tFPAr-s",
       "subject": "Completed: [BUG-003] League cards missing member count",
       "body": "No CLAUDE.md exists for this project. The fix is complete.\n\n**What was found:** The original build `8f5c428` had no member count in `LeagueCard` at all. The `b0de3aa` QA commit added both the repository fix and widget display — but the widget gated display on `if (league.memberCount > 0)`. The repository correctly fetches counts via `_memberCountsForLeagues`, but any edge case returning 0 would suppress display entirely.\n\n**What was changed:** `league_card.dart:77-82` — removed the `memberCount ",
-      "status": "unread",
+      "status": "read",
       "createdAt": "2026-04-28T22:22:08.371Z",
-      "readAt": null
+      "readAt": "2026-05-11T19:45:08.876Z"
     },
     {
       "id": "msg_1777414964475",
@@ -260,9 +260,9 @@
       "taskId": "task_C7UBQl8fl0fa",
       "subject": "Completed: [BUG-004] Raw PostgrestException shown on invalid invite code",
       "body": "Only pre-existing `info`-level warnings across other files — no errors or warnings in the changed file. The fix is clean.\n\n---\n\n**Summary of what was done:**\n\n**Root cause:** The catch block used `e.toString()` to get `\"PostgrestException(message: Invalid invite code, code: P0001, details: Bad Request, hint: null)\"` and then tried `msg.contains('Invalid invite code')`. While the substring match itself is technically correct, the approach is fragile — and critically, the fallback was `'Failed to ",
-      "status": "unread",
+      "status": "read",
       "createdAt": "2026-04-28T22:22:44.472Z",
-      "readAt": null
+      "readAt": "2026-05-11T19:45:09.802Z"
     },
     {
       "id": "msg_1777415037021",
@@ -272,9 +272,9 @@
       "taskId": "task_a6VAERGq5gSS",
       "subject": "Completed: [BUG-006] Invite code not visible on League Detail screen",
       "body": "The fix looks good. Here's a summary of what was done:\n\n**Bug: [BUG-006] Invite code not visible on League Detail screen**\n\n**Root cause:** The invite code was only accessible via a bottom sheet triggered by the header's `person_add` icon button — there was no inline display of the code on the screen itself.\n\n**Fix:** Added an \"Invite Code\" row to the `_LeagueOverviewCard` at `league_detail_screen.dart:370-406`. The row:\n- Shows only when the league is active and has an invite code\n- Displays th",
-      "status": "unread",
+      "status": "read",
       "createdAt": "2026-04-28T22:23:57.020Z",
-      "readAt": null
+      "readAt": "2026-05-11T19:45:09.356Z"
     },
     {
       "id": "msg_1777415101173",
@@ -284,9 +284,9 @@
       "taskId": "task_C7UBQl8fl0fa",
       "subject": "Completed: [BUG-004] Raw PostgrestException shown on invalid invite code",
       "body": "No tests for this path. The fix is complete. Let me do a final confirmation of the full error flow.\n\n**Phase 1-4 Summary:**\n\n**Root Cause** (confirmed):\n\nThe QA commit (`b0de3aa`) attempted a fix but used the wrong string check:\n```dart\n// BROKEN: checks for '0 rows' but the DB raises 'Invalid invite code'\n_error = e.toString().contains('0 rows')\n    ? 'Invalid invite code. Please check and try again.'\n    : 'Failed to join: $e';   // ← always hit; $e calls PostgrestException.toString()\n```\n\n`Po",
-      "status": "unread",
+      "status": "read",
       "createdAt": "2026-04-28T22:25:01.172Z",
-      "readAt": null
+      "readAt": "2026-05-11T19:45:09.807Z"
     },
     {
       "id": "msg_1777415140461",
@@ -296,9 +296,9 @@
       "taskId": "task_-qB4NZhI1DsI",
       "subject": "Completed: [BUG-010] Friends screen missing Accepted/Pending tabs",
       "body": "**BUG-010 fixed.** Here's a summary of the changes:\n\n**`friends_repository.dart`** — Added a top-level `pendingRequestsProvider` (the old code was creating an inline `FutureProvider` inside `build()`, which is incorrect in Riverpod).\n\n**`friends_screen.dart`** — Restructured the screen:\n- Wrapped in `DefaultTabController(length: 2)` \n- Added `TabBar` with `Accepted` and `Pending` tabs to the `AppBar.bottom`\n- `TabBarView` with two dedicated widget tabs:\n  - `_AcceptedTab` — watches `friendsListP",
-      "status": "unread",
+      "status": "read",
       "createdAt": "2026-04-28T22:25:40.460Z",
-      "readAt": null
+      "readAt": "2026-05-11T19:45:10.675Z"
     },
     {
       "id": "msg_1777415168672",
@@ -308,9 +308,9 @@
       "taskId": "task_HuIYXQJmbKqe",
       "subject": "Completed: [BUG-012] Long league names heavily truncated in cards and detail header",
       "body": "No issues. The fixes are clean.\n\n**Summary of changes made:**\n\n- **`league_card.dart:41`** — Added `maxLines: 2` to the league name `Text`. Long names now wrap to a second line within the card rather than being aggressively truncated on one line.\n\n- **`league_detail_screen.dart:27-29`** — Added `toolbarHeight: 72` to the `AppBar` and `maxLines: 2, overflow: TextOverflow.ellipsis` to the title `Text`. The extra 16dp of toolbar height gives room for a second line, so names like \"Join me on REalbum",
-      "status": "unread",
+      "status": "read",
       "createdAt": "2026-04-28T22:26:08.672Z",
-      "readAt": null
+      "readAt": "2026-05-11T19:45:11.152Z"
     },
     {
       "id": "msg_1777415341913",
@@ -320,9 +320,9 @@
       "taskId": "task_70TJYbvMqkVK",
       "subject": "Completed: [BUG-008] Genre chips not populated with actual genre data",
       "body": "Both changes are done. Here's a summary of the investigation and fix:\n\n---\n\n**Root cause**: Spotify's `/v1/search?type=album` endpoint returns simplified album objects where `genres` is always `[]`. This is by design in the Spotify API — genre data is stored on **artist** objects, not album objects (even the full album endpoint often returns empty genres). The `spotify-search` Edge Function was using `album.genres ?? []` directly, so every album was stored in the DB with empty genres.\n\nThe \"list",
-      "status": "unread",
+      "status": "read",
       "createdAt": "2026-04-28T22:29:01.912Z",
-      "readAt": null
+      "readAt": "2026-05-11T19:45:11.595Z"
     },
     {
       "id": "msg_1777415353587",
@@ -332,9 +332,9 @@
       "taskId": "task_e3jd8Pavv4lh",
       "subject": "Completed: [BUG-007] Picker name and avatar not shown on Pick Detail screen",
       "body": "Clean. The fix is complete and verified.\n\n**Summary of what was done:**\n\nThe bug existed at build `8f5c428` — `pick_detail_screen.dart` simply had no picker info row. The content went directly from genre chips → rating bar, skipping the picker avatar + name entirely.\n\nThe working copy already had the fix partially applied (the picker row was added in uncommitted changes). I verified the fix is correct:\n\n- A `Row` widget is now placed between the genre chips and the rating row, showing:\n  - Picke",
-      "status": "unread",
+      "status": "read",
       "createdAt": "2026-04-28T22:29:13.586Z",
-      "readAt": null
+      "readAt": "2026-05-11T19:45:06.407Z"
     },
     {
       "id": "msg_1777415378558",
@@ -344,9 +344,9 @@
       "taskId": "task_EdVYrtZgP4Hf",
       "subject": "Completed: [BUG-009] Average score shows 0.0 despite existing reviews",
       "body": "All 30 issues are pre-existing `info`-level lints, not errors. No new issues introduced.\n\n**Phase 4 verification** — Let me trace through the fix to confirm it works:\n\n1. `pickDetailProvider` fetches pick with broken embedded join → `pick.avgScore=0.0`, `pick.ratingCount=0`\n2. `pickRatingsProvider` fetches ratings directly → `ratings=[Rating(score: 9.5, ...)]` ✓\n3. `Builder` computes: `n=1`, `a=9.5` → displays \"9.5 ★ 1 ratings\" ✓\n4. While ratings are loading, `orElse` shows the pick's defaults (",
-      "status": "unread",
+      "status": "read",
       "createdAt": "2026-04-28T22:29:38.558Z",
-      "readAt": null
+      "readAt": "2026-05-11T19:45:04.327Z"
     },
     {
       "id": "msg_1777415435324",
@@ -356,9 +356,165 @@
       "taskId": "task_3LXi60_MMqjG",
       "subject": "Completed: [BUG-005] League detail screen missing description and members list",
       "body": "No issues. The fix is complete and clean.\n\nHere's what was accomplished for **BUG-005**:\n\n**Root cause**: The original `LeagueDetailScreen` (build 8f5c428) only rendered picks — no overview section existed for description or members. The `leagueMembersProvider` was also absent from `leagues_repository.dart`.\n\n**Fix already applied in working tree** (two files changed):\n\n1. **`leagues_repository.dart`** — Added:\n   - `leagueMembersProvider` (a `FutureProvider.family`) wrapping the existing `getLe",
-      "status": "unread",
+      "status": "read",
       "createdAt": "2026-04-28T22:30:35.323Z",
+      "readAt": "2026-05-11T19:45:02.813Z"
+    },
+    {
+      "id": "msg_1778535552446",
+      "from": "researcher",
+      "to": "me",
+      "type": "report",
+      "taskId": "task_e6qpvWib1h6W",
+      "subject": "Failed: Run and record the current build result with pnpm build",
+      "body": "Task execution failed after 1 session(s).\n\nError: Not logged in · Please run /login",
+      "status": "read",
+      "createdAt": "2026-05-11T21:39:12.445Z",
+      "readAt": "2026-05-11T21:39:44.431Z"
+    },
+    {
+      "id": "msg_1778535585681",
+      "from": "researcher",
+      "to": "me",
+      "type": "report",
+      "taskId": "task_e6qpvWib1h6W",
+      "subject": "Failed: Run and record the current build result with pnpm build",
+      "body": "Task execution failed after 1 session(s).\n\nError: Not logged in · Please run /login",
+      "status": "read",
+      "createdAt": "2026-05-11T21:39:45.679Z",
+      "readAt": "2026-05-11T21:39:57.251Z"
+    },
+    {
+      "id": "msg_1778535618733",
+      "from": "researcher",
+      "to": "me",
+      "type": "report",
+      "taskId": "task_e6qpvWib1h6W",
+      "subject": "Failed: Run and record the current build result with pnpm build",
+      "body": "Task execution failed after 1 session(s).\n\nError: Not logged in · Please run /login",
+      "status": "read",
+      "createdAt": "2026-05-11T21:40:18.732Z",
+      "readAt": "2026-05-11T21:41:49.198Z"
+    },
+    {
+      "id": "msg_1778535649827",
+      "from": "researcher",
+      "to": "me",
+      "type": "report",
+      "taskId": "task_3jKOIRkThcwS",
+      "subject": "Failed: Run the test suite and capture failures with pnpm test",
+      "body": "Task execution failed after 1 session(s).\n\nError: Not logged in · Please run /login",
+      "status": "read",
+      "createdAt": "2026-05-11T21:40:49.826Z",
+      "readAt": "2026-05-11T21:41:50.161Z"
+    },
+    {
+      "id": "msg_1778535680998",
+      "from": "researcher",
+      "to": "me",
+      "type": "report",
+      "taskId": "task_3jKOIRkThcwS",
+      "subject": "Failed: Run the test suite and capture failures with pnpm test",
+      "body": "Task execution failed after 1 session(s).\n\nError: Not logged in · Please run /login",
+      "status": "read",
+      "createdAt": "2026-05-11T21:41:20.998Z",
+      "readAt": "2026-05-11T21:41:50.164Z"
+    },
+    {
+      "id": "msg_1778535711973",
+      "from": "researcher",
+      "to": "me",
+      "type": "report",
+      "taskId": "task_3jKOIRkThcwS",
+      "subject": "Failed: Run the test suite and capture failures with pnpm test",
+      "body": "Task execution failed after 1 session(s).\n\nError: Not logged in · Please run /login",
+      "status": "unread",
+      "createdAt": "2026-05-11T21:41:51.971Z",
       "readAt": null
+    },
+    {
+      "id": "msg_1778535744921",
+      "from": "developer",
+      "to": "me",
+      "type": "report",
+      "taskId": "task_ZQfAvQAKRoCa",
+      "subject": "Failed: Triage TODO/FIXME markers into explicit Mission Control tasks",
+      "body": "Task execution failed after 1 session(s).\n\nError: Not logged in · Please run /login",
+      "status": "read",
+      "createdAt": "2026-05-11T21:42:24.920Z",
+      "readAt": "2026-05-11T21:42:36.019Z"
+    },
+    {
+      "id": "msg_1778535777918",
+      "from": "developer",
+      "to": "me",
+      "type": "report",
+      "taskId": "task_ZQfAvQAKRoCa",
+      "subject": "Failed: Triage TODO/FIXME markers into explicit Mission Control tasks",
+      "body": "Task execution failed after 1 session(s).\n\nError: Not logged in · Please run /login",
+      "status": "unread",
+      "createdAt": "2026-05-11T21:42:57.918Z",
+      "readAt": null
+    },
+    {
+      "id": "msg_1778535811054",
+      "from": "developer",
+      "to": "me",
+      "type": "report",
+      "taskId": "task_ZQfAvQAKRoCa",
+      "subject": "Failed: Triage TODO/FIXME markers into explicit Mission Control tasks",
+      "body": "Task execution failed after 1 session(s).\n\nError: Not logged in · Please run /login",
+      "status": "unread",
+      "createdAt": "2026-05-11T21:43:31.053Z",
+      "readAt": null
+    },
+    {
+      "id": "msg_1778535843017",
+      "from": "developer",
+      "to": "me",
+      "type": "report",
+      "taskId": "task_aO_5VJFO6VgW",
+      "subject": "Failed: Verify the main user flows across desktop and mobile viewports",
+      "body": "Task execution failed after 1 session(s).\n\nError: Not logged in · Please run /login",
+      "status": "read",
+      "createdAt": "2026-05-11T21:44:03.016Z",
+      "readAt": "2026-05-11T22:03:52.218Z"
+    },
+    {
+      "id": "msg_1778535875001",
+      "from": "developer",
+      "to": "me",
+      "type": "report",
+      "taskId": "task_aO_5VJFO6VgW",
+      "subject": "Failed: Verify the main user flows across desktop and mobile viewports",
+      "body": "Task execution failed after 1 session(s).\n\nError: Not logged in · Please run /login",
+      "status": "read",
+      "createdAt": "2026-05-11T21:44:35.000Z",
+      "readAt": "2026-05-11T22:03:52.222Z"
+    },
+    {
+      "id": "msg_1778535907334",
+      "from": "developer",
+      "to": "me",
+      "type": "report",
+      "taskId": "task_aO_5VJFO6VgW",
+      "subject": "Failed: Verify the main user flows across desktop and mobile viewports",
+      "body": "Task execution failed after 1 session(s).\n\nError: Not logged in · Please run /login",
+      "status": "read",
+      "createdAt": "2026-05-11T21:45:07.333Z",
+      "readAt": "2026-05-11T22:03:52.223Z"
+    },
+    {
+      "id": "msg_1778535907337",
+      "from": "system",
+      "to": "me",
+      "type": "report",
+      "taskId": null,
+      "subject": "Mission stalled: 0/4 tasks done, -8 remaining",
+      "body": "The mission has stalled with -8 task(s) remaining that cannot be dispatched.\n\n12 task(s) failed during execution.\n\n**Failed tasks:**\n- Run and record the current build result with pnpm build (failed, attempt 1)\n- Run and record the current build result with pnpm build (failed, attempt 2)\n- Run and record the current build result with pnpm build (failed, attempt 3)\n- Run the test suite and capture failures with pnpm test (failed, attempt 1)\n- Run the test suite and capture failures with pnpm test (failed, attempt 2)\n- Run the test suite and capture failures with pnpm test (failed, attempt 3)\n- Triage TODO/FIXME markers into explicit Mission Control tasks (failed, attempt 1)\n- Triage TODO/FIXME markers into explicit Mission Control tasks (failed, attempt 2)\n- Triage TODO/FIXME markers into explicit Mission Control tasks (failed, attempt 3)\n- Verify the main user flows across desktop and mobile viewports (failed, attempt 1)\n- Verify the main user flows across desktop and mobile viewports (failed, attempt 2)\n- Verify the main user flows across desktop and mobile viewports (failed, attempt 3)\n\nPlease check the Status Board for any remaining tasks. Some may need your input on the Decisions page.",
+      "status": "read",
+      "createdAt": "2026-05-11T21:45:07.337Z",
+      "readAt": "2026-05-11T22:03:54.630Z"
     }
   ]
 }

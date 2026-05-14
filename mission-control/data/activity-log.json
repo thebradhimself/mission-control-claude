@@ -269,6 +269,141 @@
       "summary": "Completed task: task_3LXi60_MMqjG",
       "details": "No issues. The fix is complete and clean.\n\nHere's what was accomplished for **BUG-005**:\n\n**Root cause**: The original `LeagueDetailScreen` (build 8f5c428) only rendered picks — no overview section existed for description or members. The `leagueMembersProvider` was also absent from `leagues_repository.dart`.\n\n**Fix already applied in working tree** (two files changed):\n\n1. **`leagues_repository.dart`** — Added:\n   - `leagueMembersProvider` (a `FutureProvider.family`) wrapping the existing `getLe",
       "timestamp": "2026-04-28T22:30:35.323Z"
+    },
+    {
+      "id": "evt_1778535552445",
+      "type": "task_failed",
+      "actor": "researcher",
+      "taskId": "task_e6qpvWib1h6W",
+      "summary": "Task failed: Run and record the current build result with pnpm build",
+      "details": "Agent \"researcher\" failed after 1 session(s). Error: Not logged in · Please run /login",
+      "timestamp": "2026-05-11T21:39:12.445Z"
+    },
+    {
+      "id": "evt_1778535585679",
+      "type": "task_failed",
+      "actor": "researcher",
+      "taskId": "task_e6qpvWib1h6W",
+      "summary": "Task failed: Run and record the current build result with pnpm build",
+      "details": "Agent \"researcher\" failed after 1 session(s). Error: Not logged in · Please run /login",
+      "timestamp": "2026-05-11T21:39:45.679Z"
+    },
+    {
+      "id": "evt_1778535618732",
+      "type": "task_failed",
+      "actor": "researcher",
+      "taskId": "task_e6qpvWib1h6W",
+      "summary": "Task failed: Run and record the current build result with pnpm build",
+      "details": "Agent \"researcher\" failed after 1 session(s). Error: Not logged in · Please run /login",
+      "timestamp": "2026-05-11T21:40:18.732Z"
+    },
+    {
+      "id": "evt_1778535649826",
+      "type": "task_failed",
+      "actor": "researcher",
+      "taskId": "task_3jKOIRkThcwS",
+      "summary": "Task failed: Run the test suite and capture failures with pnpm test",
+      "details": "Agent \"researcher\" failed after 1 session(s). Error: Not logged in · Please run /login",
+      "timestamp": "2026-05-11T21:40:49.826Z"
+    },
+    {
+      "id": "evt_1778535680998",
+      "type": "task_failed",
+      "actor": "researcher",
+      "taskId": "task_3jKOIRkThcwS",
+      "summary": "Task failed: Run the test suite and capture failures with pnpm test",
+      "details": "Agent \"researcher\" failed after 1 session(s). Error: Not logged in · Please run /login",
+      "timestamp": "2026-05-11T21:41:20.998Z"
+    },
+    {
+      "id": "evt_1778535711971",
+      "type": "task_failed",
+      "actor": "researcher",
+      "taskId": "task_3jKOIRkThcwS",
+      "summary": "Task failed: Run the test suite and capture failures with pnpm test",
+      "details": "Agent \"researcher\" failed after 1 session(s). Error: Not logged in · Please run /login",
+      "timestamp": "2026-05-11T21:41:51.971Z"
+    },
+    {
+      "id": "evt_1778535744920",
+      "type": "task_failed",
+      "actor": "developer",
+      "taskId": "task_ZQfAvQAKRoCa",
+      "summary": "Task failed: Triage TODO/FIXME markers into explicit Mission Control tasks",
+      "details": "Agent \"developer\" failed after 1 session(s). Error: Not logged in · Please run /login",
+      "timestamp": "2026-05-11T21:42:24.920Z"
+    },
+    {
+      "id": "evt_piYXA9fK-260",
+      "type": "decision_answered",
+      "actor": "me",
+      "taskId": "task_3jKOIRkThcwS",
+      "summary": "Answered: Task \"Run the test suite and capture failures with pnpm test → \"retry again\"",
+      "details": "",
+      "timestamp": "2026-05-11T21:42:25.447Z"
+    },
+    {
+      "id": "evt_ZnYq9SfP4-46",
+      "type": "decision_answered",
+      "actor": "me",
+      "taskId": "task_e6qpvWib1h6W",
+      "summary": "Answered: Task \"Run and record the current build result with pnpm buil → \"retry again\"",
+      "details": "",
+      "timestamp": "2026-05-11T21:42:28.449Z"
+    },
+    {
+      "id": "evt_1778535777918",
+      "type": "task_failed",
+      "actor": "developer",
+      "taskId": "task_ZQfAvQAKRoCa",
+      "summary": "Task failed: Triage TODO/FIXME markers into explicit Mission Control tasks",
+      "details": "Agent \"developer\" failed after 1 session(s). Error: Not logged in · Please run /login",
+      "timestamp": "2026-05-11T21:42:57.918Z"
+    },
+    {
+      "id": "evt_1778535811053",
+      "type": "task_failed",
+      "actor": "developer",
+      "taskId": "task_ZQfAvQAKRoCa",
+      "summary": "Task failed: Triage TODO/FIXME markers into explicit Mission Control tasks",
+      "details": "Agent \"developer\" failed after 1 session(s). Error: Not logged in · Please run /login",
+      "timestamp": "2026-05-11T21:43:31.053Z"
+    },
+    {
+      "id": "evt_1778535843017",
+      "type": "task_failed",
+      "actor": "developer",
+      "taskId": "task_aO_5VJFO6VgW",
+      "summary": "Task failed: Verify the main user flows across desktop and mobile viewports",
+      "details": "Agent \"developer\" failed after 1 session(s). Error: Not logged in · Please run /login",
+      "timestamp": "2026-05-11T21:44:03.016Z"
+    },
+    {
+      "id": "evt_1778535875000",
+      "type": "task_failed",
+      "actor": "developer",
+      "taskId": "task_aO_5VJFO6VgW",
+      "summary": "Task failed: Verify the main user flows across desktop and mobile viewports",
+      "details": "Agent \"developer\" failed after 1 session(s). Error: Not logged in · Please run /login",
+      "timestamp": "2026-05-11T21:44:35.000Z"
+    },
+    {
+      "id": "evt_1778535907334",
+      "type": "task_failed",
+      "actor": "developer",
+      "taskId": "task_aO_5VJFO6VgW",
+      "summary": "Task failed: Verify the main user flows across desktop and mobile viewports",
+      "details": "Agent \"developer\" failed after 1 session(s). Error: Not logged in · Please run /login",
+      "timestamp": "2026-05-11T21:45:07.333Z"
+    },
+    {
+      "id": "evt_1778553369442",
+      "type": "task_updated",
+      "actor": "developer",
+      "taskId": null,
+      "summary": "Fixed daemon Claude auth environment preflight",
+      "details": "Added USER/LOGNAME/USERNAME to the daemon safe environment and added a Claude auth preflight before daemon startup and agent spawn so logged-in Claude sessions are visible to child processes.",
+      "timestamp": "2026-05-12T02:36:09.441Z"
     }
   ]
 }

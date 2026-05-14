@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    {
+      "id": "rec_1778553369449",
+      "title": "Surface daemon auth preflight failures in Autopilot UI",
+      "category": "observability",
+      "pillar": "Observability",
+      "rationale": "The daemon now fails fast when its child environment cannot access Claude auth, but /api/daemon can still return a generic starting response before the detached process reports the specific preflight error.",
+      "estimatedEffort": "M",
+      "dependencies": [],
+      "status": "open",
+      "sourceSession": "2026-05-12",
+      "createdAt": "2026-05-12T02:36:09.441Z"
+    }
+  ]
+}

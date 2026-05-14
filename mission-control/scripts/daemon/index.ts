@@ -4,7 +4,7 @@ import path from "path";
 import { logger } from "./logger";
 import { loadConfig } from "./config";
 import { HealthMonitor } from "./health";
-import { AgentRunner } from "./runner";
+import { AgentRunner, assertClaudeAuthenticated } from "./runner";
 import { Dispatcher } from "./dispatcher";
 import { Scheduler } from "./scheduler";
 
@@ -122,6 +122,10 @@ async function handleStart(): Promise<void> {
   } else if (config.execution.allowedTools.length > 0) {
     logger.info("daemon", `Allowed tools: ${config.execution.allowedTools.join(", ")}`);
   }
+
+  // Fail before polling/spawning if this daemon process cannot access Claude auth.
+  assertClaudeAuthenticated({ agentTeams: config.execution.agentTeams });
+  logger.info("daemon", "Claude Code auth preflight passed");
 
   // Initialize components
   const health = new HealthMonitor();

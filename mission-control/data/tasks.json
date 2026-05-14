@@ -461,6 +461,150 @@
       "dueDate": null,
       "completedAt": "2026-04-28T22:26:08.672Z",
       "deletedAt": null
+    },
+    {
+      "id": "task_e6qpvWib1h6W",
+      "title": "Run and record the current build result with pnpm build",
+      "description": "Run and record the current build result with pnpm build.\n\nGenerated from the directory scan for mission-control.\nSource directory: /Users/bradleyhintze/workspace/projects/mission-control-claude/mission-control",
+      "importance": "important",
+      "urgency": "urgent",
+      "kanban": "in-progress",
+      "projectId": "proj_laeenFFdAVUX",
+      "milestoneId": null,
+      "assignedTo": "researcher",
+      "collaborators": [
+        "me"
+      ],
+      "dailyActions": [],
+      "subtasks": [],
+      "blockedBy": [],
+      "estimatedMinutes": 60,
+      "actualMinutes": null,
+      "acceptanceCriteria": [
+        "The recommendation has been investigated against the current codebase.",
+        "Findings or implementation details are recorded in the task notes.",
+        "Any resulting code or documentation changes have been verified locally."
+      ],
+      "fieldTaskIds": [],
+      "comments": [],
+      "tags": [
+        "directory-scan",
+        "qa-hardening"
+      ],
+      "notes": "",
+      "dueDate": null,
+      "createdAt": "2026-05-11T20:30:46.851Z",
+      "updatedAt": "2026-05-11T21:39:09.413Z",
+      "completedAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "task_3jKOIRkThcwS",
+      "title": "Run the test suite and capture failures with pnpm test",
+      "description": "Run the test suite and capture failures with pnpm test.\n\nGenerated from the directory scan for mission-control.\nSource directory: /Users/bradleyhintze/workspace/projects/mission-control-claude/mission-control",
+      "importance": "important",
+      "urgency": "not-urgent",
+      "kanban": "in-progress",
+      "projectId": "proj_laeenFFdAVUX",
+      "milestoneId": null,
+      "assignedTo": "researcher",
+      "collaborators": [
+        "me"
+      ],
+      "dailyActions": [],
+      "subtasks": [],
+      "blockedBy": [],
+      "estimatedMinutes": 60,
+      "actualMinutes": null,
+      "acceptanceCriteria": [
+        "The recommendation has been investigated against the current codebase.",
+        "Findings or implementation details are recorded in the task notes.",
+        "Any resulting code or documentation changes have been verified locally."
+      ],
+      "fieldTaskIds": [],
+      "comments": [],
+      "tags": [
+        "directory-scan",
+        "qa-hardening"
+      ],
+      "notes": "",
+      "dueDate": null,
+      "createdAt": "2026-05-11T20:30:46.851Z",
+      "updatedAt": "2026-05-11T21:40:49.325Z",
+      "completedAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "task_ZQfAvQAKRoCa",
+      "title": "Triage TODO/FIXME markers into explicit Mission Control tasks",
+      "description": "Triage TODO/FIXME markers into explicit Mission Control tasks.\n\nGenerated from the directory scan for mission-control.\nSource directory: /Users/bradleyhintze/workspace/projects/mission-control-claude/mission-control",
+      "importance": "important",
+      "urgency": "not-urgent",
+      "kanban": "in-progress",
+      "projectId": "proj_laeenFFdAVUX",
+      "milestoneId": null,
+      "assignedTo": "developer",
+      "collaborators": [
+        "me"
+      ],
+      "dailyActions": [],
+      "subtasks": [],
+      "blockedBy": [],
+      "estimatedMinutes": 60,
+      "actualMinutes": null,
+      "acceptanceCriteria": [
+        "The recommendation has been investigated against the current codebase.",
+        "Findings or implementation details are recorded in the task notes.",
+        "Any resulting code or documentation changes have been verified locally."
+      ],
+      "fieldTaskIds": [],
+      "comments": [],
+      "tags": [
+        "directory-scan",
+        "qa-hardening"
+      ],
+      "notes": "",
+      "dueDate": null,
+      "createdAt": "2026-05-11T20:30:46.851Z",
+      "updatedAt": "2026-05-11T21:42:24.443Z",
+      "completedAt": null,
+      "deletedAt": null
+    },
+    {
+      "id": "task_aO_5VJFO6VgW",
+      "title": "Verify the main user flows across desktop and mobile viewports",
+      "description": "Verify the main user flows across desktop and mobile viewports.\n\nGenerated from the directory scan for mission-control.\nSource directory: /Users/bradleyhintze/workspace/projects/mission-control-claude/mission-control",
+      "importance": "not-important",
+      "urgency": "not-urgent",
+      "kanban": "in-progress",
+      "projectId": "proj_laeenFFdAVUX",
+      "milestoneId": null,
+      "assignedTo": "developer",
+      "collaborators": [
+        "me"
+      ],
+      "dailyActions": [],
+      "subtasks": [],
+      "blockedBy": [],
+      "estimatedMinutes": 30,
+      "actualMinutes": null,
+      "acceptanceCriteria": [
+        "The recommendation has been investigated against the current codebase.",
+        "Findings or implementation details are recorded in the task notes.",
+        "Any resulting code or documentation changes have been verified locally."
+      ],
+      "fieldTaskIds": [],
+      "comments": [],
+      "tags": [
+        "directory-scan",
+        "qa-hardening"
+      ],
+      "notes": "",
+      "dueDate": null,
+      "createdAt": "2026-05-11T20:30:46.851Z",
+      "updatedAt": "2026-05-11T21:44:02.543Z",
+      "completedAt": null,
+      "deletedAt": null
     }
   ]
 }

@@ -9,6 +9,14 @@ const kanbanEnum = z.enum(["not-started", "in-progress", "done"]);
 const goalTypeEnum = z.enum(["long-term", "medium-term"]);
 const goalStatusEnum = z.enum(["not-started", "in-progress", "completed"]);
 const projectStatusEnum = z.enum(["active", "paused", "completed", "archived"]);
+const projectDevelopmentStageEnum = z.enum([
+  "discovery",
+  "prototype",
+  "active-development",
+  "qa-hardening",
+  "launch-ready",
+  "maintenance",
+]);
 // Relaxed from fixed enum to string — validated against agent registry at runtime.
 const agentRoleEnum = z.string().min(1).max(50);
 const actorEnum = z.string().min(1).max(50);
@@ -165,6 +173,38 @@ export const goalUpdateSchema = z.object({
 
 // ─── Project schemas ───────────────────────────────────────────────────────────
 
+const projectDirectoryAnalysisSchema = z.object({
+  sourceDirectory: z.string().max(1000),
+  scannedAt: z.string().max(30),
+  category: z.string().max(100),
+  developmentStage: projectDevelopmentStageEnum,
+  confidence: z.enum(["low", "medium", "high"]),
+  summary: z.string().max(LIMITS.DESCRIPTION),
+  stack: z.array(z.string().max(100)).max(50),
+  packageManagers: z.array(z.string().max(50)).max(20),
+  commands: z.object({
+    install: z.string().max(200).optional(),
+    dev: z.string().max(200).optional(),
+    build: z.string().max(200).optional(),
+    test: z.string().max(200).optional(),
+    lint: z.string().max(200).optional(),
+  }),
+  counts: z.object({
+    filesScanned: z.number().int().min(0),
+    directoriesScanned: z.number().int().min(0),
+    sourceFiles: z.number().int().min(0),
+    testFiles: z.number().int().min(0),
+    docsFiles: z.number().int().min(0),
+    configFiles: z.number().int().min(0),
+    todoMarkers: z.number().int().min(0),
+  }),
+  signals: z.array(z.string().max(300)).max(40),
+  risks: z.array(z.string().max(300)).max(40),
+  recommendations: z.array(z.string().max(300)).max(40),
+  notableFiles: z.array(z.string().max(500)).max(80),
+  generatedTasks: z.array(z.string().max(100)).max(20),
+});
+
 export const projectCreateSchema = z.object({
   name: z.string().min(1, "Name is required").max(LIMITS.TITLE),
   description: z.string().max(LIMITS.DESCRIPTION).optional().default(""),
@@ -172,6 +212,8 @@ export const projectCreateSchema = z.object({
   color: z.string().max(20).optional().default("#6B7280"),
   teamMembers: z.array(z.string().max(50)).max(20).optional().default([]),
   tags: z.array(z.string().max(LIMITS.TAG)).max(LIMITS.MAX_TAGS).optional().default([]),
+  sourceDirectory: z.string().max(1000).optional(),
+  analysis: projectDirectoryAnalysisSchema.optional(),
   deletedAt: z.string().nullable().optional().default(null),
 });
 
@@ -183,6 +225,8 @@ export const projectUpdateSchema = z.object({
   color: z.string().max(20).optional(),
   teamMembers: z.array(z.string().max(50)).max(20).optional(),
   tags: z.array(z.string().max(LIMITS.TAG)).max(LIMITS.MAX_TAGS).optional(),
+  sourceDirectory: z.string().max(1000).optional(),
+  analysis: projectDirectoryAnalysisSchema.optional(),
   deletedAt: z.string().nullable().optional(),
 });
 
