@@ -61,6 +61,7 @@ export const LIMITS = {
   SUBTASK_TITLE: 500,
   COMMENT_CONTENT: 5000,
   TAG: 100,
+  CHAT_MESSAGE: 20_000,
   MAX_SUBTASKS: 100,
   MAX_DAILY_ACTIONS: 100,
   MAX_COMMENTS: 100,
@@ -589,6 +590,13 @@ export const annotationCreateSchema = z.object({
 export const annotationUpdateSchema = z.object({
   body: z.string().min(1).max(LIMITS.BODY).optional(),
   status: annotationStatusEnum.optional(),
+});
+
+// ─── Chat schemas ────────────────────────────────────────────────────────────
+
+export const chatSendSchema = z.object({
+  projectId: z.string().min(1).max(100),
+  message: z.string().min(1).max(LIMITS.CHAT_MESSAGE),
 });
 
 // ─── Validation helper ─────────────────────────────────────────────────────────
