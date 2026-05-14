@@ -10,6 +10,18 @@ import type { SpecMeta } from "@/lib/specs/storage";
 type SpecResponse = { markdown: string | null; meta: SpecMeta | null };
 type RegenResponse = { markdown: string; meta: SpecMeta };
 
+async function readErrorDetail(res: Response): Promise<string> {
+  try {
+    const body = await res.json();
+    if (body && typeof body === "object" && typeof body.error === "string") {
+      return body.error;
+    }
+  } catch {
+    // fall through
+  }
+  return `Request failed (${res.status})`;
+}
+
 type Props = {
   projectId: string;
 };
@@ -28,7 +40,10 @@ export function LivingSpec({ projectId }: Props) {
     setError(null);
     try {
       const res = await fetch(`/api/specs/${encodeURIComponent(projectId)}`, { cache: "no-store" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {
+        const detail = await readErrorDetail(res);
+        throw new Error(detail);
+      }
       const data = (await res.json()) as SpecResponse;
       setMarkdown(data.markdown);
       setMeta(data.meta);
@@ -48,7 +63,10 @@ export function LivingSpec({ projectId }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ projectId, reason }),
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {
+        const detail = await readErrorDetail(res);
+        throw new Error(detail);
+      }
       const data = (await res.json()) as RegenResponse;
       setMarkdown(data.markdown);
       setMeta(data.meta);
@@ -64,13 +82,13 @@ export function LivingSpec({ projectId }: Props) {
   }, [fetchSpec]);
 
   useEffect(() => {
-    if (loading || regenerating) return;
+    if (loading || regenerating || error) return;
     const isMissing = markdown === null;
     const isStale = meta && Date.now() - new Date(meta.generatedAt).getTime() > STALE_MS;
     if (isMissing || isStale) {
       regen("stale-view");
     }
-  }, [loading, regenerating, markdown, meta, regen]);
+  }, [loading, regenerating, error, markdown, meta, regen]);
 
   if (loading) {
     return (

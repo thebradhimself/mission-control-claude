@@ -1,3 +1,4 @@
+import { AI_MODEL } from "@/lib/ai/client";
 import type { SpecTemplate } from "@/lib/specs/templates";
 
 export type SpecRegenInputs = {
@@ -26,7 +27,7 @@ export function buildSystemPrompt(template: SpecTemplate): string {
     "- Do not add or remove sections.",
     "- Keep the doc readable end-to-end in under 60 seconds.",
     "- When data is thin, say so — don't fabricate.",
-    "- After the last section, append a single line: `<!-- generated-by: mission-control · model: claude-sonnet-4-6 -->`",
+    `- After the last section, append a single line: \`<!-- generated-by: mission-control · model: ${AI_MODEL} -->\``,
     "- Do not output anything before the first heading or after the trailing comment.",
   ].join("\n");
 }
