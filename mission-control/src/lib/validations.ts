@@ -24,6 +24,7 @@ const actorEnum = z.string().min(1).max(50);
 const messageTypeEnum = z.enum(["delegation", "report", "question", "update", "approval"]);
 const messageStatusEnum = z.enum(["unread", "read", "archived"]);
 const decisionStatusEnum = z.enum(["pending", "answered"]);
+const annotationStatusEnum = z.enum(["open", "resolved", "orphaned"]);
 const eventTypeEnum = z.enum([
   "task_created",
   "task_updated",
@@ -574,6 +575,20 @@ export const fieldBatchSchema = z.object({
   taskIds: z.array(z.string().min(1)).min(1).max(50),
   actor: z.string().max(50).optional().default("system"),
   rejectionFeedback: z.string().max(LIMITS.DESCRIPTION).optional(),
+});
+
+// ─── Annotation schemas ──────────────────────────────────────────────────────
+
+export const annotationCreateSchema = z.object({
+  projectId: z.string().min(1).max(100),
+  sectionHeading: z.string().min(1).max(200),
+  paragraphIndex: z.number().int().min(0).max(1000),
+  body: z.string().min(1).max(LIMITS.BODY),
+});
+
+export const annotationUpdateSchema = z.object({
+  body: z.string().min(1).max(LIMITS.BODY).optional(),
+  status: annotationStatusEnum.optional(),
 });
 
 // ─── Validation helper ─────────────────────────────────────────────────────────
