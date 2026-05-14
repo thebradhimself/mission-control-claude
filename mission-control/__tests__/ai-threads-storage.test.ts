@@ -74,4 +74,14 @@ describe("ai/threads storage", () => {
     const t = await readThread("proj_1", dir);
     expect(t?.messages.map((m) => m.content).sort()).toEqual(["a", "b", "c"]);
   });
+
+  it("strips path-traversal attempts from projectId before resolving the file path", async () => {
+    // A projectId containing path separators / parent refs must not escape the ai-threads/ subdir.
+    await appendTurns("../../escape", [user("hi")], dir);
+    // The file should land at <dir>/ai-threads/escape.json (basename-stripped), not outside dir.
+    expect(existsSync(join(dir, "ai-threads", "escape.json"))).toBe(true);
+    // And readThread with the same crafted ID returns the same thread.
+    const t = await readThread("../../escape", dir);
+    expect(t?.messages.map((m) => m.content)).toEqual(["hi"]);
+  });
 });

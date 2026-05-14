@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { chatSendSchema } from "@/lib/validations";
+import { chatSendSchema, validateBody } from "@/lib/validations";
 import { runChatTurn } from "@/lib/ai/chat-orchestrator";
 import { readThread } from "@/lib/ai/threads";
 import type {
@@ -15,12 +15,9 @@ async function loadJson<T>(file: string): Promise<T> {
 }
 
 export async function POST(req: Request) {
-  let parsed;
-  try {
-    parsed = chatSendSchema.parse(await req.json());
-  } catch (err) {
-    return NextResponse.json({ error: "Invalid request body", detail: String(err) }, { status: 400 });
-  }
+  const validation = await validateBody(req, chatSendSchema);
+  if (!validation.success) return validation.error;
+  const parsed = validation.data;
 
   const [projectsFile, tasksFile, goalsFile, activityFile, decisionsFile, inboxFile] = await Promise.all([
     loadJson<{ projects: Project[] }>("projects.json"),

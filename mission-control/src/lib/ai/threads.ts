@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { basename, join, resolve } from "node:path";
 import { Mutex } from "async-mutex";
 import type { ChatMessage, ChatThread } from "@/lib/types";
 
@@ -19,7 +19,10 @@ function getMutex(path: string): Mutex {
 }
 
 function pathFor(projectId: string, baseDir: string): string {
-  return join(baseDir, SUBDIR, `${projectId}.json`);
+  // Basename-strip defends against path-traversal (e.g. "../../etc/passwd")
+  // when callers pass a raw URL segment as projectId.
+  const safe = basename(projectId);
+  return join(baseDir, SUBDIR, `${safe}.json`);
 }
 
 export async function readThread(
