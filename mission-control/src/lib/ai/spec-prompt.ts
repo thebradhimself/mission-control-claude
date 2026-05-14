@@ -2,7 +2,6 @@ import type { SpecTemplate } from "@/lib/specs/templates";
 
 export type SpecRegenInputs = {
   template: SpecTemplate;
-  contextBlock: string;
   previousSpec: string | null;
   reason: "manual" | "cron" | "event" | "stale-view";
 };
@@ -39,8 +38,7 @@ export function buildUserPrompt(inputs: SpecRegenInputs): string {
   return [
     `Regenerate the spec. Reason: ${inputs.reason}.`,
     "",
-    "## Project data",
-    inputs.contextBlock,
+    "(Project data follows in the cached context block.)",
     previous,
   ].join("\n");
 }

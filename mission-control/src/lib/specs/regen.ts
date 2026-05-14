@@ -24,7 +24,6 @@ export async function regenSpec(input: RegenInput): Promise<RegenResult> {
   const systemPrompt = buildSystemPrompt(template);
   const userPrompt = buildUserPrompt({
     template,
-    contextBlock,
     previousSpec: previous?.markdown ?? null,
     reason,
   });
@@ -35,7 +34,7 @@ export async function regenSpec(input: RegenInput): Promise<RegenResult> {
   ];
   const userBlocks: CachedTextBlock[] = [
     { type: "text", text: contextBlock, cache_control: { type: "ephemeral" } },
-    { type: "text", text: userPrompt.replace(contextBlock, "") },
+    { type: "text", text: userPrompt },
   ];
 
   const response = await client.messages.create({
