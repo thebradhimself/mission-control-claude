@@ -21,6 +21,11 @@
       "enabled": false,
       "cron": "0 17 * * 5",
       "command": "weekly-review"
+    },
+    "specRegenAll": {
+      "enabled": false,
+      "cron": "0 */6 * * *",
+      "command": "pnpm tsx scripts/spec-regen-all.ts"
     }
   },
   "execution": {

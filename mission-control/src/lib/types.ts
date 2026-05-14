@@ -11,6 +11,7 @@ export type ProjectDevelopmentStage =
   | "qa-hardening"
   | "launch-ready"
   | "maintenance";
+export type ProjectType = "software" | "content" | "business";
 // AgentRole is now a string validated against the agent registry at runtime.
 // Built-in roles are kept as a type for backward compatibility.
 export type BuiltInAgentRole = "me" | "researcher" | "developer" | "marketer" | "business-analyst";
@@ -228,6 +229,7 @@ export interface Project {
   tags: string[];
   sourceDirectory?: string;
   analysis?: ProjectDirectoryAnalysis;
+  type: ProjectType | null;
   deletedAt: string | null;
 }
 

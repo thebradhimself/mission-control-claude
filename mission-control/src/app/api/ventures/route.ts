@@ -65,6 +65,7 @@ export async function POST(request: Request) {
       tags: body.tags,
       sourceDirectory: body.sourceDirectory,
       analysis: body.analysis,
+      type: body.type ?? null,
       deletedAt: null,
     };
     data.projects.push(project);

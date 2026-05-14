@@ -58,3 +58,8 @@ research/
 .dolt/
 *.db
 .beads-credential-key
+
+# AI-generated, per-project living specs
+mission-control/data/specs/
+# AI chat threads (per-machine, not source of truth)
+mission-control/data/ai-threads/

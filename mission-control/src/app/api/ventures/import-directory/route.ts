@@ -38,6 +38,7 @@ export async function POST(request: Request) {
         tags: imported.tags,
         sourceDirectory: imported.analysis.sourceDirectory,
         analysis: imported.analysis,
+        type: null,
         deletedAt: null,
       };
       data.projects.push(newProject);

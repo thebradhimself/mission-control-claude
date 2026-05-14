@@ -23,6 +23,7 @@ export async function POST() {
         teamMembers: ["developer", "marketer"],
         tags: ["marketing", "web", "demo"],
         createdAt: daysAgo(14),
+        type: null,
         deletedAt: null,
       },
       {
@@ -34,6 +35,7 @@ export async function POST() {
         teamMembers: ["developer", "researcher"],
         tags: ["backend", "infrastructure", "demo"],
         createdAt: daysAgo(21),
+        type: null,
         deletedAt: null,
       },
       {
@@ -45,6 +47,7 @@ export async function POST() {
         teamMembers: ["marketer", "business-analyst"],
         tags: ["marketing", "growth", "demo"],
         createdAt: daysAgo(60),
+        type: null,
         deletedAt: null,
       },
     ],

@@ -707,6 +707,43 @@ describe("brainDumpUpdateSchema", () => {
   });
 });
 
+// ─── Project type field ────────────────────────────────────────────────────
+
+describe("projectCreateSchema — type field", () => {
+  it("defaults type to null when omitted", () => {
+    const result = projectCreateSchema.safeParse({ name: "Untyped project" });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.type).toBeNull();
+    }
+  });
+
+  it("accepts each valid type", () => {
+    for (const t of ["software", "content", "business"] as const) {
+      const result = projectCreateSchema.safeParse({ name: "P", type: t });
+      expect(result.success).toBe(true);
+      if (result.success) expect(result.data.type).toBe(t);
+    }
+  });
+
+  it("rejects invalid types", () => {
+    const result = projectCreateSchema.safeParse({ name: "P", type: "marketing" });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("projectUpdateSchema — type field", () => {
+  it("accepts a type update", () => {
+    const result = projectUpdateSchema.safeParse({ id: "proj_1", type: "content" });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts null to clear the type", () => {
+    const result = projectUpdateSchema.safeParse({ id: "proj_1", type: null });
+    expect(result.success).toBe(true);
+  });
+});
+
 // ─── Activity Event Create Schema ──────────────────────────────────────────────
 
 describe("activityEventCreateSchema", () => {

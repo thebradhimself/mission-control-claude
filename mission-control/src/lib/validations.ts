@@ -17,6 +17,7 @@ const projectDevelopmentStageEnum = z.enum([
   "launch-ready",
   "maintenance",
 ]);
+const projectTypeEnum = z.enum(["software", "content", "business"]);
 // Relaxed from fixed enum to string — validated against agent registry at runtime.
 const agentRoleEnum = z.string().min(1).max(50);
 const actorEnum = z.string().min(1).max(50);
@@ -214,6 +215,7 @@ export const projectCreateSchema = z.object({
   tags: z.array(z.string().max(LIMITS.TAG)).max(LIMITS.MAX_TAGS).optional().default([]),
   sourceDirectory: z.string().max(1000).optional(),
   analysis: projectDirectoryAnalysisSchema.optional(),
+  type: projectTypeEnum.nullable().optional().default(null),
   deletedAt: z.string().nullable().optional().default(null),
 });
 
@@ -227,6 +229,7 @@ export const projectUpdateSchema = z.object({
   tags: z.array(z.string().max(LIMITS.TAG)).max(LIMITS.MAX_TAGS).optional(),
   sourceDirectory: z.string().max(1000).optional(),
   analysis: projectDirectoryAnalysisSchema.optional(),
+  type: projectTypeEnum.nullable().optional(),
   deletedAt: z.string().nullable().optional(),
 });
 

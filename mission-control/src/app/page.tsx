@@ -38,7 +38,7 @@ import { ErrorState } from "@/components/error-state";
 import { Tip } from "@/components/ui/tip";
 import { FinancialOverviewCard } from "@/components/field-ops/financial-overview-card";
 import { AGENT_ROLES } from "@/lib/types";
-import type { AgentRole } from "@/lib/types";
+import type { AgentRole, ProjectType } from "@/lib/types";
 import type { TaskFormData } from "@/components/task-form";
 import { apiFetch } from "@/lib/api-client";
 import { showSuccess, showError } from "@/lib/toast";
@@ -168,7 +168,7 @@ export default function CommandCenterPage() {
     }
   };
 
-  const handleCreateProject = async (formData: { name: string; description: string; color: string; tags: string; teamMembers?: string[] }) => {
+  const handleCreateProject = async (formData: { name: string; description: string; color: string; tags: string; teamMembers?: string[]; type: ProjectType | null }) => {
     try {
       const res = await apiFetch("/api/ventures", {
         method: "POST",
@@ -180,6 +180,7 @@ export default function CommandCenterPage() {
           color: formData.color,
           teamMembers: formData.teamMembers ?? [],
           tags: formData.tags.split(",").map((t) => t.trim()).filter(Boolean),
+          type: formData.type,
         }),
       });
       if (!res.ok) throw new Error("Failed to create project");

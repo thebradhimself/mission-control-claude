@@ -16,6 +16,8 @@ import { Badge } from "@/components/ui/badge";
 import { FolderInput, Loader2, X, Users } from "lucide-react";
 import { useAgents } from "@/hooks/use-data";
 import { getAgentIcon } from "@/lib/agent-icons";
+import { ProjectTypeSelector } from "@/components/project-type-selector";
+import type { ProjectType } from "@/lib/types";
 
 const PROJECT_COLORS = [
   "#6366f1", "#8b5cf6", "#ec4899", "#f43f5e",
@@ -25,7 +27,7 @@ const PROJECT_COLORS = [
 interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: { name: string; description: string; color: string; tags: string; teamMembers: string[] }) => void;
+  onSubmit: (data: { name: string; description: string; color: string; tags: string; teamMembers: string[]; type: ProjectType | null }) => void;
   onImportDirectory?: (data: { directory: string; color: string; createTasks: boolean }) => Promise<void>;
 }
 
@@ -40,6 +42,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSubmit, onImportDire
   const [teamMembers, setTeamMembers] = useState<string[]>([]);
   const [directory, setDirectory] = useState("");
   const [importing, setImporting] = useState(false);
+  const [type, setType] = useState<ProjectType | null>(null);
 
   const toggleTeamMember = (agentId: string) => {
     setTeamMembers((prev) =>
@@ -50,12 +53,13 @@ export function CreateProjectDialog({ open, onOpenChange, onSubmit, onImportDire
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    onSubmit({ name: name.trim(), description, color, tags, teamMembers });
+    onSubmit({ name: name.trim(), description, color, tags, teamMembers, type });
     setName("");
     setDescription("");
     setColor(PROJECT_COLORS[0]);
     setTags("");
     setTeamMembers([]);
+    setType(null);
     onOpenChange(false);
   };
 
@@ -210,6 +214,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSubmit, onImportDire
               placeholder="saas, web, mobile..."
             />
           </div>
+          <ProjectTypeSelector value={type} onChange={setType} id="create-project-type" />
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
               Cancel

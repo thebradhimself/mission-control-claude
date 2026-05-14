@@ -35,6 +35,7 @@ import { cn } from "@/lib/utils";
 import { Users, X } from "lucide-react";
 import { RunButton } from "@/components/run-button";
 import { ProjectRunProgress } from "@/components/mission-progress";
+import { LivingSpec } from "@/components/living-spec";
 
 function DraggableTask({ task, onClick, isRunning, onRun, pendingDecisionTaskIds }: { task: Task; onClick: () => void; isRunning?: boolean; onRun?: (taskId: string) => void; pendingDecisionTaskIds?: Set<string> }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: task.id });
@@ -272,13 +273,18 @@ export default function ProjectDetailPage() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="priority-matrix" className="space-y-4">
+      <Tabs defaultValue="spec" className="space-y-4">
         <TabsList>
+          <TabsTrigger value="spec">Spec</TabsTrigger>
           <TabsTrigger value="priority-matrix">Priority Matrix</TabsTrigger>
           <TabsTrigger value="status-board">Status Board</TabsTrigger>
           <TabsTrigger value="milestones">Milestones</TabsTrigger>
           {project.analysis && <TabsTrigger value="scan">Scan</TabsTrigger>}
         </TabsList>
+
+        <TabsContent value="spec">
+          <LivingSpec projectId={projectId} />
+        </TabsContent>
 
         <TabsContent value="priority-matrix">
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleEisenhowerDragEnd}>

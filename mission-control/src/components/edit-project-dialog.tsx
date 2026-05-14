@@ -22,7 +22,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { X, Users } from "lucide-react";
 import { getAgentIcon } from "@/lib/agent-icons";
-import type { Project, ProjectStatus, AgentDefinition } from "@/lib/types";
+import { ProjectTypeSelector } from "@/components/project-type-selector";
+import type { Project, ProjectStatus, AgentDefinition, ProjectType } from "@/lib/types";
 
 const PROJECT_COLORS = [
   "#6366f1", "#8b5cf6", "#ec4899", "#f43f5e",
@@ -41,6 +42,7 @@ interface EditProjectDialogProps {
     color: string;
     teamMembers: string[];
     tags: string[];
+    type: ProjectType | null;
   }) => void;
 }
 
@@ -53,6 +55,7 @@ export function EditProjectDialog({ open, onOpenChange, project, agents, onSubmi
   const [color, setColor] = useState(project.color);
   const [tags, setTags] = useState(project.tags.join(", "));
   const [teamMembers, setTeamMembers] = useState<string[]>(project.teamMembers);
+  const [type, setType] = useState<ProjectType | null>(project.type ?? null);
 
   // Reset form when project changes
   useEffect(() => {
@@ -62,6 +65,7 @@ export function EditProjectDialog({ open, onOpenChange, project, agents, onSubmi
     setColor(project.color);
     setTags(project.tags.join(", "));
     setTeamMembers([...project.teamMembers]);
+    setType(project.type ?? null);
   }, [project]);
 
   const toggleTeamMember = (agentId: string) => {
@@ -80,6 +84,7 @@ export function EditProjectDialog({ open, onOpenChange, project, agents, onSubmi
       color,
       teamMembers,
       tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+      type,
     });
     onOpenChange(false);
   };
@@ -211,6 +216,7 @@ export function EditProjectDialog({ open, onOpenChange, project, agents, onSubmi
               placeholder="saas, web, mobile..."
             />
           </div>
+          <ProjectTypeSelector value={type} onChange={setType} id="edit-project-type" />
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
               Cancel
