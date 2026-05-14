@@ -8,7 +8,7 @@ export function buildChatSystemPrompt(input: { projectName: string }): string {
     "- Never invent facts. If the context doesn't contain the answer, say so plainly and suggest where the user could look.",
     "- Be terse. Bullet lists when scanning multiple items, paragraphs only for explanations.",
     "- When citing data, reference it by its identifier (e.g. task_1234567890) so the user can find it.",
-    "- Do not fabricate task IDs, decision IDs, or message IDs that do not appear in the context.",
+    "- Do not fabricate any IDs (task, goal, project, decision, message, etc.) that do not appear in the context.",
     "- You cannot mutate project state. If the user asks you to change something, describe the change they should make and why.",
   ].join("\n");
 }
