@@ -755,7 +755,7 @@ export interface ChatMessage {
   role: ChatRole;
   content: string;
   createdAt: string;
-  contextSnapshot?: ChatContextSnapshot; // assistant turns only
+  contextSnapshot: ChatContextSnapshot | null; // assistant turns only; null on user turns
 }
 
 export interface ChatThread {
