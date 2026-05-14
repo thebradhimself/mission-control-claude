@@ -7,7 +7,7 @@ import type { ChatMessage, ChatThread } from "@/lib/types";
 const DEFAULT_BASE = resolve(process.cwd(), "data");
 const SUBDIR = "ai-threads";
 
-// One mutex per file path keeps concurrent writes to the same thread serialized.
+// One mutex per file path serializes all reads and writes to the same thread file.
 const fileMutexes = new Map<string, Mutex>();
 function getMutex(path: string): Mutex {
   let m = fileMutexes.get(path);
@@ -27,10 +27,13 @@ export async function readThread(
   baseDir: string = DEFAULT_BASE,
 ): Promise<ChatThread | null> {
   const path = pathFor(projectId, baseDir);
-  if (!existsSync(path)) return null;
-  const text = await readFile(path, "utf8");
-  if (!text.trim()) return null;
-  return JSON.parse(text) as ChatThread;
+  const mutex = getMutex(path);
+  return mutex.runExclusive(async () => {
+    if (!existsSync(path)) return null;
+    const text = await readFile(path, "utf8");
+    if (!text.trim()) return null;
+    return JSON.parse(text) as ChatThread;
+  });
 }
 
 export async function appendTurns(
