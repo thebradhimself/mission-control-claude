@@ -1,10 +1,12 @@
 import { AI_MODEL } from "@/lib/ai/client";
 import type { SpecTemplate } from "@/lib/specs/templates";
+import type { Annotation } from "@/lib/types";
 
 export type SpecRegenInputs = {
   template: SpecTemplate;
   previousSpec: string | null;
   reason: "manual" | "cron" | "event" | "stale-view";
+  openAnnotations: Annotation[];
 };
 
 export function buildSystemPrompt(template: SpecTemplate): string {
@@ -29,6 +31,12 @@ export function buildSystemPrompt(template: SpecTemplate): string {
     "- When data is thin, say so — don't fabricate.",
     `- After the last section, append a single line: \`<!-- generated-by: mission-control · model: ${AI_MODEL} -->\``,
     "- Do not output anything before the first heading or after the trailing comment.",
+    "",
+    "Annotations:",
+    "- The user attaches notes to specific paragraphs. When you see an annotation, treat the user's note as an instruction or correction.",
+    "- You MAY revise the paragraph to incorporate the correction (the system will detect that the text changed and the user can confirm resolution).",
+    "- You MAY preserve the paragraph unchanged if you cannot or should not act on the annotation.",
+    "- Never silently delete or invent annotations. The annotation lifecycle is managed by the system.",
   ].join("\n");
 }
 
@@ -36,10 +44,22 @@ export function buildUserPrompt(inputs: SpecRegenInputs): string {
   const previous = inputs.previousSpec
     ? `\n\n## Previous spec (for reference; rewrite, do not patch)\n${inputs.previousSpec}`
     : "";
+
+  const annotations = inputs.openAnnotations.length
+    ? "\n\n## Open annotations from the user\n" +
+      inputs.openAnnotations
+        .map(
+          (a) =>
+            `- Section "${a.sectionHeading}", paragraph ${a.paragraphIndex + 1}: ${a.body}`
+        )
+        .join("\n")
+    : "";
+
   return [
     `Regenerate the spec. Reason: ${inputs.reason}.`,
     "",
     "(Project data follows in the cached context block.)",
+    annotations,
     previous,
   ].join("\n");
 }
