@@ -17,6 +17,8 @@ import {
   brainDumpCreateSchema,
   brainDumpUpdateSchema,
   activityEventCreateSchema,
+  annotationCreateSchema,
+  annotationUpdateSchema,
   LIMITS,
 } from "@/lib/validations";
 
@@ -798,6 +800,55 @@ describe("activityEventCreateSchema", () => {
 
   it("rejects empty summary", () => {
     const result = activityEventCreateSchema.safeParse({ type: "task_created", summary: "" });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("annotationCreateSchema", () => {
+  it("accepts a minimal valid annotation", () => {
+    const result = annotationCreateSchema.safeParse({
+      projectId: "proj_1",
+      sectionHeading: "In flight",
+      paragraphIndex: 2,
+      body: "Actually paused in March",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects negative paragraphIndex", () => {
+    const result = annotationCreateSchema.safeParse({
+      projectId: "proj_1",
+      sectionHeading: "In flight",
+      paragraphIndex: -1,
+      body: "x",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects empty body", () => {
+    const result = annotationCreateSchema.safeParse({
+      projectId: "proj_1",
+      sectionHeading: "In flight",
+      paragraphIndex: 0,
+      body: "",
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("annotationUpdateSchema", () => {
+  it("accepts a status update", () => {
+    const result = annotationUpdateSchema.safeParse({ status: "resolved" });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a body update", () => {
+    const result = annotationUpdateSchema.safeParse({ body: "new note" });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects unknown status values", () => {
+    const result = annotationUpdateSchema.safeParse({ status: "deleted" });
     expect(result.success).toBe(false);
   });
 });

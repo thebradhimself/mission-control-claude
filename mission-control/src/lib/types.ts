@@ -716,3 +716,26 @@ export interface ServiceCatalogFile {
 
 // Re-export financial types from adapter layer for convenience
 export type { FinancialMetric, FinancialSnapshot } from "@/lib/adapters/types";
+
+// ─── Annotations ──────────────────────────────────────────────────────────────
+
+export type AnnotationStatus = "open" | "resolved" | "orphaned";
+export type AnnotationResolvedBy = "user" | "ai" | null;
+
+export interface Annotation {
+  id: string;
+  projectId: string;
+  sectionHeading: string;
+  paragraphIndex: number;
+  paragraphHash: string;
+  body: string;
+  status: AnnotationStatus;
+  createdAt: string;
+  resolvedAt: string | null;
+  orphanedAt: string | null;
+  resolvedBy: AnnotationResolvedBy;
+}
+
+export interface AnnotationsFile {
+  annotations: Annotation[];
+}
