@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-
 export type ParsedParagraph = {
   index: number;
   text: string;
@@ -11,8 +9,30 @@ export type ParsedSection = {
   paragraphs: ParsedParagraph[];
 };
 
+/**
+ * FNV-1a 64-bit hash implemented via two 32-bit halves.
+ * Produces a stable 16-char lowercase hex string.
+ * Browser-safe (no node:crypto).
+ */
 export function hashParagraph(text: string): string {
-  return createHash("sha1").update(text.trim()).digest("hex").slice(0, 16);
+  const input = text.trim();
+  // FNV offset basis split into two 32-bit halves (hi: 0xcbf29ce4, lo: 0x84222325 — note: actual 64-bit is 0xcbf29ce484222325)
+  let hi = 0xcbf29ce4 >>> 0;
+  let lo = 0x84222325 >>> 0;
+  const FNV_PRIME_LO = 0x01000193 >>> 0; // lower 32 bits of FNV prime 1099511628211
+
+  for (let i = 0; i < input.length; i++) {
+    const byte = input.charCodeAt(i) & 0xff;
+    lo ^= byte;
+    // Multiply (hi, lo) by FNV_PRIME: (hi, lo) * prime
+    // hi * prime may overflow but we mask to 32 bits
+    const newLo = Math.imul(lo, FNV_PRIME_LO) >>> 0;
+    const newHi = (Math.imul(hi, FNV_PRIME_LO) + Math.imul(lo >>> 16, 0x0100) + (newLo < lo ? 1 : 0)) >>> 0;
+    lo = newLo;
+    hi = newHi;
+  }
+
+  return hi.toString(16).padStart(8, "0") + lo.toString(16).padStart(8, "0");
 }
 
 const SECTION_RE = /^## (.+)$/;
