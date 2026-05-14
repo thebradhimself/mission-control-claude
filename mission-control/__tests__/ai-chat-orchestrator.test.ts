@@ -90,7 +90,7 @@ describe("runChatTurn", () => {
     });
 
     const secondCall = createMock.mock.calls[1][0];
-    // Expect: [first-user-with-cached-context, first-assistant, current-user-with-cached-context]
+    // Expect: [first-user-with-cached-context, first-assistant, current-user-PLAIN]
     expect(secondCall.messages).toHaveLength(3);
     expect(secondCall.messages[0].role).toBe("user");
     expect(secondCall.messages[1].role).toBe("assistant");
@@ -98,6 +98,13 @@ describe("runChatTurn", () => {
     // and replayed as the prior assistant turn.
     expect(secondCall.messages[1].content).toBe("Hello! Three tasks are open.");
     expect(secondCall.messages[2].role).toBe("user");
+
+    // The cache marker must be on the FIRST user turn (the replayed prior turn),
+    // not on the current user turn. This is the cross-request prompt-cache invariant.
+    expect(secondCall.messages[0].content[0].cache_control).toEqual({ type: "ephemeral" });
+    expect(secondCall.messages[0].content[1].text).toBe("first");
+    expect(typeof secondCall.messages[2].content).toBe("string");
+    expect(secondCall.messages[2].content).toBe("second");
   });
 
   it("captures specHash in the assistant snapshot when a spec exists", async () => {

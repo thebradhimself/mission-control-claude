@@ -25,12 +25,12 @@ function buildContextSnapshot(input: {
   specMarkdown: string | null;
   contextInput: SpecContextInput;
 }): ChatContextSnapshot {
-  const taskCount = input.contextInput.tasks.filter(
-    (t) => t.projectId === input.contextInput.project.id,
-  ).length;
   const projectTaskIds = new Set(
-    input.contextInput.tasks.filter((t) => t.projectId === input.contextInput.project.id).map((t) => t.id),
+    input.contextInput.tasks
+      .filter((t) => t.projectId === input.contextInput.project.id)
+      .map((t) => t.id),
   );
+  const taskCount = projectTaskIds.size;
   const projectActivity = input.contextInput.activity.filter((e) => e.taskId && projectTaskIds.has(e.taskId));
   const activityRange: [string, string] | null = projectActivity.length
     ? [
