@@ -18,6 +18,7 @@ export type RegenResult = {
   markdown: string;
   meta: SpecMeta;
   annotationsRefreshed: number;
+  annotationsDrifted: number;
   annotationsOrphaned: number;
 };
 
@@ -72,13 +73,15 @@ export async function regenSpec(input: RegenInput): Promise<RegenResult> {
   // Re-anchor open annotations against the new spec.
   const sections = parseSpecSections(markdown);
   let refreshed = 0;
+  let drifted = 0;
   let orphaned = 0;
   for (const ann of openAnnotations) {
     const result = reAnchorAnnotation(ann, sections);
     const same =
       result.annotation.paragraphIndex === ann.paragraphIndex &&
       result.annotation.paragraphHash === ann.paragraphHash &&
-      result.annotation.status === ann.status;
+      result.annotation.status === ann.status &&
+      result.annotation.driftedAt === ann.driftedAt;
     if (same) continue;
     await updateAnnotation(
       ann.id,
@@ -87,14 +90,16 @@ export async function regenSpec(input: RegenInput): Promise<RegenResult> {
         paragraphHash: result.annotation.paragraphHash,
         status: result.annotation.status,
         orphanedAt: result.annotation.orphanedAt,
+        driftedAt: result.annotation.driftedAt,
       },
       annotationsBaseDir
     );
     if (result.kind === "orphaned") orphaned += 1;
+    else if (result.kind === "drifted") drifted += 1;
     else refreshed += 1;
   }
 
-  return { markdown, meta, annotationsRefreshed: refreshed, annotationsOrphaned: orphaned };
+  return { markdown, meta, annotationsRefreshed: refreshed, annotationsDrifted: drifted, annotationsOrphaned: orphaned };
 }
 
 export function isStale(meta: SpecMeta | null, maxAgeMs = 12 * 60 * 60 * 1000): boolean {
