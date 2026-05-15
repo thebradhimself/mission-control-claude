@@ -1,0 +1,1 @@
+{"id":"int-24b15ab3","kind":"field_change","created_at":"2026-05-15T00:09:14.632212Z","actor":"Brad Hintze","issue_id":"mission_control-jdy","extra":{"field":"status","new_value":"closed","old_value":"in_progress","reason":"Plan 3 merged to main at 6f9b299. 268/268 tests, types/lint/build clean. Manual UI smoke test still pending."}}
