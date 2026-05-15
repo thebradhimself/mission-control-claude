@@ -15,6 +15,7 @@ function makeAnnotation(overrides: Partial<Annotation> = {}): Annotation {
     createdAt: "2026-05-14T00:00:00Z",
     resolvedAt: null,
     orphanedAt: null,
+    driftedAt: null,
     resolvedBy: null,
     ...overrides,
   };
@@ -34,16 +35,17 @@ describe("reAnchorAnnotation", () => {
     }
   });
 
-  it("updates the hash when section+index match but the paragraph text changed", () => {
+  it("returns 'drifted' when section+index match but the paragraph text changed (and original hash is gone)", () => {
     const md = "## In flight\n\nnew text\n\nother para";
     const sections = parseSpecSections(md);
     const ann = makeAnnotation();
     const result = reAnchorAnnotation(ann, sections);
-    expect(result.kind).toBe("kept");
-    if (result.kind === "kept") {
+    expect(result.kind).toBe("drifted");
+    if (result.kind === "drifted") {
       expect(result.annotation.paragraphIndex).toBe(0);
       expect(result.annotation.paragraphHash).toBe(hashParagraph("new text"));
       expect(result.annotation.status).toBe("open");
+      expect(result.annotation.driftedAt).not.toBeNull();
     }
   });
 
@@ -99,6 +101,45 @@ describe("reAnchorAnnotation", () => {
     expect(result.kind).toBe("kept");
     if (result.kind === "kept") {
       expect(result.annotation.status).toBe("resolved");
+    }
+  });
+
+  it("returns 'drifted' when the section+index still resolve but the original hash is gone", () => {
+    // Original paragraph hash is for "original text" — but the spec now has "completely different" at index 0
+    // and no paragraph matches the original hash anywhere in the section.
+    const md = "## In flight\n\ncompletely different\n\nalso unrelated";
+    const sections = parseSpecSections(md);
+    const ann = makeAnnotation({ paragraphIndex: 0 });
+    const result: ReAnchorResult = reAnchorAnnotation(ann, sections);
+    expect(result.kind).toBe("drifted");
+    if (result.kind === "drifted") {
+      expect(result.annotation.status).toBe("open");
+      expect(result.annotation.paragraphIndex).toBe(0);
+      expect(result.annotation.paragraphHash).toBe(hashParagraph("completely different"));
+      expect(result.annotation.driftedAt).not.toBeNull();
+    }
+  });
+
+  it("does not mark drifted when the original hash is found elsewhere in the section", () => {
+    // Original moved to index 1; should be a clean "kept" with updated index, not drifted.
+    const md = "## In flight\n\nintro\n\noriginal text";
+    const sections = parseSpecSections(md);
+    const ann = makeAnnotation({ paragraphIndex: 0 });
+    const result = reAnchorAnnotation(ann, sections);
+    expect(result.kind).toBe("kept");
+    if (result.kind === "kept") {
+      expect(result.annotation.driftedAt).toBeNull();
+    }
+  });
+
+  it("preserves a previously-set driftedAt when the anchor is unchanged", () => {
+    const md = "## In flight\n\noriginal text";
+    const sections = parseSpecSections(md);
+    const ann = makeAnnotation({ driftedAt: "2026-05-13T00:00:00Z" });
+    const result = reAnchorAnnotation(ann, sections);
+    expect(result.kind).toBe("kept");
+    if (result.kind === "kept") {
+      expect(result.annotation.driftedAt).toBe("2026-05-13T00:00:00Z");
     }
   });
 });

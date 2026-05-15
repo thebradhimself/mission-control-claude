@@ -47,6 +47,7 @@ export async function POST(req: Request) {
     createdAt: new Date().toISOString(),
     resolvedAt: null,
     orphanedAt: null,
+    driftedAt: null,
     resolvedBy: null,
   };
 

@@ -3,6 +3,7 @@ import type { Annotation } from "@/lib/types";
 
 export type ReAnchorResult =
   | { kind: "kept"; annotation: Annotation }
+  | { kind: "drifted"; annotation: Annotation }
   | { kind: "orphaned"; annotation: Annotation };
 
 export function reAnchorAnnotation(
@@ -25,12 +26,12 @@ export function reAnchorAnnotation(
 
   const atIndex = section.paragraphs[annotation.paragraphIndex];
 
-  // If the paragraph at the stored index has the exact same hash, it's unchanged — keep as-is.
+  // 1. Hash matches at the stored index — completely unchanged. Preserve everything.
   if (atIndex && atIndex.hash === annotation.paragraphHash) {
     return { kind: "kept", annotation };
   }
 
-  // Try to find the original paragraph by hash (it may have moved within the section).
+  // 2. Hash matches some other paragraph in the section — clean move, update the index.
   const byHash = section.paragraphs.find((p) => p.hash === annotation.paragraphHash);
   if (byHash) {
     return {
@@ -39,11 +40,12 @@ export function reAnchorAnnotation(
     };
   }
 
-  // The paragraph at the stored index exists but with different content — update the hash.
+  // 3. Paragraph still exists at the stored index but content changed AND original hash is gone.
+  //    The annotation drifted — silently re-anchor BUT flag it for user review.
   if (atIndex) {
     return {
-      kind: "kept",
-      annotation: { ...annotation, paragraphHash: atIndex.hash },
+      kind: "drifted",
+      annotation: { ...annotation, paragraphHash: atIndex.hash, driftedAt: now() },
     };
   }
 

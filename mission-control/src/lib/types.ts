@@ -733,6 +733,7 @@ export interface Annotation {
   createdAt: string;
   resolvedAt: string | null;
   orphanedAt: string | null;
+  driftedAt: string | null;
   resolvedBy: AnnotationResolvedBy;
 }
 

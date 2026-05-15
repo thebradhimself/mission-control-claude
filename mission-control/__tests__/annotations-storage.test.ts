@@ -24,6 +24,7 @@ function makeAnn(overrides: Partial<Annotation> = {}): Annotation {
     createdAt: "2026-05-14T00:00:00Z",
     resolvedAt: null,
     orphanedAt: null,
+    driftedAt: null,
     resolvedBy: null,
     ...overrides,
   };
