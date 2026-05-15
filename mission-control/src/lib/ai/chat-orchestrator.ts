@@ -1,15 +1,17 @@
 import { createHash } from "node:crypto";
-import { AI_MODEL, getAnthropicClient, type CachedTextBlock } from "@/lib/ai/client";
 import { buildChatCachedBlock, buildChatSystemPrompt } from "@/lib/ai/chat-prompt";
 import { buildSpecContext, type SpecContextInput } from "@/lib/specs/context-builder";
 import { readSpec } from "@/lib/specs/storage";
 import { appendTurns, readThread } from "@/lib/ai/threads";
+import { getProvider } from "@/lib/ai/providers/select";
+import type { ChatProvider } from "@/lib/ai/providers/types";
 import type { ChatContextSnapshot, ChatMessage } from "@/lib/types";
 
 export type RunChatTurnInput = SpecContextInput & {
   userMessage: string;
   specBaseDir?: string;
   threadsBaseDir?: string;
+  provider?: ChatProvider;
 };
 
 export type RunChatTurnResult = {
@@ -57,59 +59,17 @@ export async function runChatTurn(input: RunChatTurnInput): Promise<RunChatTurnR
 
   const priorThread = await readThread(project.id, threadsBaseDir);
   const priorMessages = priorThread?.messages ?? [];
+  const resumeSessionId = priorThread?.providerSessionId ?? null;
 
-  const client = getAnthropicClient();
-  const systemBlocks: CachedTextBlock[] = [
-    { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
-  ];
+  const provider = input.provider ?? getProvider();
 
-  type CreateParams = Parameters<typeof client.messages.create>[0];
-  type MessageParam = CreateParams["messages"][number];
-
-  // Reconstruct prior turns. Only the FIRST user message carries the cached context block;
-  // subsequent user turns are plain text. This matches Anthropic's prompt-cache pattern
-  // and lets re-runs hit the cache on the system + first-context blocks.
-  const messages: MessageParam[] = [];
-  let cachedAttached = false;
-  for (const m of priorMessages) {
-    if (m.role === "user" && !cachedAttached) {
-      messages.push({
-        role: "user",
-        content: [
-          { type: "text", text: cachedBlock, cache_control: { type: "ephemeral" } },
-          { type: "text", text: m.content },
-        ] as MessageParam["content"],
-      });
-      cachedAttached = true;
-    } else {
-      messages.push({ role: m.role, content: m.content });
-    }
-  }
-  // Append current user turn — attach cached block here if no prior user turn existed.
-  if (!cachedAttached) {
-    messages.push({
-      role: "user",
-      content: [
-        { type: "text", text: cachedBlock, cache_control: { type: "ephemeral" } },
-        { type: "text", text: userMessage },
-      ] as MessageParam["content"],
-    });
-  } else {
-    messages.push({ role: "user", content: userMessage });
-  }
-
-  const response = await client.messages.create({
-    model: AI_MODEL,
-    max_tokens: 2048,
-    system: systemBlocks as CreateParams["system"],
-    messages,
+  const turn = await provider.sendTurn({
+    systemPrompt,
+    cachedContextBlock: cachedBlock,
+    priorMessages,
+    userMessage,
+    resumeSessionId,
   });
-
-  const textBlock = response.content.find((b) => b.type === "text");
-  if (!textBlock || textBlock.type !== "text") {
-    throw new Error("AI returned no text content for chat turn");
-  }
-  const assistantText = textBlock.text.trim();
 
   const now = Date.now();
   const userTurn: ChatMessage = {
@@ -122,12 +82,15 @@ export async function runChatTurn(input: RunChatTurnInput): Promise<RunChatTurnR
   const assistantTurn: ChatMessage = {
     id: `msg_${now}_a`,
     role: "assistant",
-    content: assistantText,
+    content: turn.assistantText,
     createdAt: new Date(now + 1).toISOString(),
     contextSnapshot: buildContextSnapshot({ specMarkdown, contextInput: input }),
   };
 
-  await appendTurns(project.id, [userTurn, assistantTurn], threadsBaseDir);
+  await appendTurns(project.id, [userTurn, assistantTurn], threadsBaseDir, {
+    providerId: provider.id,
+    providerSessionId: turn.sessionId,
+  });
 
   return { user: userTurn, assistant: assistantTurn };
 }

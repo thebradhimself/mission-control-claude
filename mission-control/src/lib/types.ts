@@ -763,4 +763,9 @@ export interface ChatThread {
   messages: ChatMessage[];
   createdAt: string;
   updatedAt: string;
+  // Provider-specific session ID (e.g. Claude Code `session_id`, Codex
+  // `thread_id`) so CLI providers can resume the same conversation. Absent
+  // for anthropic-api threads.
+  providerSessionId?: string | null;
+  providerId?: string;
 }

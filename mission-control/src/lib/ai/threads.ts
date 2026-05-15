@@ -39,10 +39,16 @@ export async function readThread(
   });
 }
 
+export interface AppendTurnsMeta {
+  providerId?: string;
+  providerSessionId?: string | null;
+}
+
 export async function appendTurns(
   projectId: string,
   turns: ChatMessage[],
   baseDir: string = DEFAULT_BASE,
+  meta: AppendTurnsMeta = {},
 ): Promise<ChatThread> {
   const path = pathFor(projectId, baseDir);
   const mutex = getMutex(path);
@@ -58,8 +64,20 @@ export async function appendTurns(
           messages: [...existing.messages, ...turns],
           createdAt: existing.createdAt,
           updatedAt: now,
+          providerId: meta.providerId ?? existing.providerId,
+          providerSessionId:
+            meta.providerSessionId !== undefined
+              ? meta.providerSessionId
+              : existing.providerSessionId ?? null,
         }
-      : { projectId, messages: [...turns], createdAt: now, updatedAt: now };
+      : {
+          projectId,
+          messages: [...turns],
+          createdAt: now,
+          updatedAt: now,
+          providerId: meta.providerId,
+          providerSessionId: meta.providerSessionId ?? null,
+        };
     await writeFile(path, JSON.stringify(next, null, 2), "utf8");
     return next;
   });
