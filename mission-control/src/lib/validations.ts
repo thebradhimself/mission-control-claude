@@ -587,10 +587,20 @@ export const annotationCreateSchema = z.object({
   body: z.string().min(1).max(LIMITS.BODY),
 });
 
-export const annotationUpdateSchema = z.object({
-  body: z.string().min(1).max(LIMITS.BODY).optional(),
-  status: annotationStatusEnum.optional(),
-});
+export const annotationUpdateSchema = z
+  .object({
+    body: z.string().min(1).max(LIMITS.BODY).optional(),
+    status: annotationStatusEnum.optional(),
+    sectionHeading: z.string().min(1).max(200).optional(),
+    paragraphIndex: z.number().int().min(0).max(1000).optional(),
+    ackDrift: z.boolean().optional(),
+  })
+  .refine(
+    (v) =>
+      // Re-anchor requires BOTH section + index together.
+      (v.sectionHeading === undefined) === (v.paragraphIndex === undefined),
+    { message: "Re-anchor requires both sectionHeading and paragraphIndex" }
+  );
 
 // ─── Chat schemas ────────────────────────────────────────────────────────────
 
