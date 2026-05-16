@@ -3,6 +3,7 @@ import { getGoals, mutateGoals, mutateTasks } from "@/lib/data";
 import type { Goal } from "@/lib/types";
 import { goalCreateSchema, goalUpdateSchema, validateBody, DEFAULT_LIMIT } from "@/lib/validations";
 import { generateId } from "@/lib/utils";
+import { enqueueSpecRegen } from "@/lib/specs/regen-queue";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -82,17 +83,31 @@ export async function PUT(request: Request) {
   if (!validation.success) return validation.error;
   const body = validation.data;
 
-  const updated = await mutateGoals(async (data) => {
+  const result = await mutateGoals(async (data) => {
     const idx = data.goals.findIndex((g) => g.id === body.id);
     if (idx === -1) return null;
+    const previousStatus = data.goals[idx].status;
     data.goals[idx] = { ...data.goals[idx], ...body };
-    return data.goals[idx];
+    return { goal: data.goals[idx], previousStatus };
   });
 
-  if (!updated) {
+  if (!result) {
     return NextResponse.json({ error: "Goal not found" }, { status: 404 });
   }
-  return NextResponse.json(updated);
+
+  // Spec regen on milestone completion transitions
+  const justCompleted =
+    result.previousStatus !== "completed" &&
+    result.goal.status === "completed" &&
+    result.goal.type === "medium-term" &&
+    !!result.goal.projectId;
+
+  if (justCompleted && result.goal.projectId) {
+    try { enqueueSpecRegen(result.goal.projectId); }
+    catch (err) { console.error("[goals.PUT] enqueueSpecRegen failed:", err); }
+  }
+
+  return NextResponse.json(result.goal);
 }
 
 export async function DELETE(request: Request) {

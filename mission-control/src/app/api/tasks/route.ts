@@ -3,6 +3,7 @@ import { getTasks, getTasksArchive, mutateTasks, mutateInbox, mutateActivityLog,
 import type { Task, AgentRole, InboxMessage, ActivityEvent } from "@/lib/types";
 import { taskCreateSchema, taskUpdateSchema, validateBody, DEFAULT_LIMIT } from "@/lib/validations";
 import { generateId } from "@/lib/utils";
+import { enqueueSpecRegen } from "@/lib/specs/regen-queue";
 
 // ─── Side-effect helpers (now atomic via mutate*) ───────────────────────────
 
@@ -306,6 +307,11 @@ export async function POST(request: Request) {
     await handleCollaboratorChanges(newTask, []);
   }
 
+  if (newTask.projectId) {
+    try { enqueueSpecRegen(newTask.projectId); }
+    catch (err) { console.error("[tasks.POST] enqueueSpecRegen failed:", err); }
+  }
+
   return NextResponse.json(newTask, { status: 201 });
 }
 
@@ -349,6 +355,18 @@ export async function PUT(request: Request) {
   }
   await handleCompletion(updatedTask, wasCompleted);
 
+  // Spec regen for the project this task belongs to (or used to belong to).
+  const oldProj = oldTask.projectId;
+  const newProj = updatedTask.projectId;
+  if (newProj) {
+    try { enqueueSpecRegen(newProj); }
+    catch (err) { console.error("[tasks.PUT] enqueueSpecRegen failed:", err); }
+  }
+  if (oldProj && oldProj !== newProj) {
+    try { enqueueSpecRegen(oldProj); }
+    catch (err) { console.error("[tasks.PUT] enqueueSpecRegen failed (old):", err); }
+  }
+
   return NextResponse.json(updatedTask);
 }
 
@@ -361,14 +379,17 @@ export async function DELETE(request: Request) {
   }
 
   if (hard) {
-    // Hard delete: permanently remove + clean up references
-    await mutateTasks(async (data) => {
+    // Hard delete: capture projectId, permanently remove, clean up references
+    const hardDeleted = await mutateTasks(async (data) => {
+      const target = data.tasks.find((t) => t.id === id);
+      const capturedProjectId = target?.projectId ?? null;
       for (const task of data.tasks) {
         if (task.blockedBy) {
           task.blockedBy = task.blockedBy.filter((bid) => bid !== id);
         }
       }
       data.tasks = data.tasks.filter((t) => t.id !== id);
+      return { projectId: capturedProjectId };
     });
 
     // Clean up goal task references (best-effort)
@@ -378,20 +399,30 @@ export async function DELETE(request: Request) {
       }
     });
 
+    if (hardDeleted.projectId) {
+      try { enqueueSpecRegen(hardDeleted.projectId); }
+      catch (err) { console.error("[tasks.DELETE hard] enqueueSpecRegen failed:", err); }
+    }
+
     return NextResponse.json({ ok: true });
   }
 
-  // Soft delete: set deletedAt timestamp
-  const found = await mutateTasks(async (data) => {
+  // Soft delete: set deletedAt timestamp; capture projectId for regen enqueue
+  const softDeleted = await mutateTasks(async (data) => {
     const task = data.tasks.find((t) => t.id === id);
-    if (!task) return false;
+    if (!task) return null;
     task.deletedAt = new Date().toISOString();
     task.updatedAt = new Date().toISOString();
-    return true;
+    return { projectId: task.projectId };
   });
 
-  if (!found) {
+  if (!softDeleted) {
     return NextResponse.json({ error: "Task not found" }, { status: 404 });
+  }
+
+  if (softDeleted.projectId) {
+    try { enqueueSpecRegen(softDeleted.projectId); }
+    catch (err) { console.error("[tasks.DELETE soft] enqueueSpecRegen failed:", err); }
   }
 
   return NextResponse.json({ ok: true });

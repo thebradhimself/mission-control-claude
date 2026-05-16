@@ -45,7 +45,18 @@ export async function addAnnotation(
 
 export async function updateAnnotation(
   id: string,
-  patch: Partial<Pick<Annotation, "body" | "status" | "paragraphIndex" | "paragraphHash" | "resolvedAt" | "orphanedAt" | "resolvedBy">>,
+  patch: Partial<Pick<
+    Annotation,
+    | "body"
+    | "status"
+    | "sectionHeading"
+    | "paragraphIndex"
+    | "paragraphHash"
+    | "resolvedAt"
+    | "orphanedAt"
+    | "driftedAt"
+    | "resolvedBy"
+  >>,
   baseDir: string = DEFAULT_DIR
 ): Promise<Annotation | null> {
   return fileMutex.runExclusive(async () => {

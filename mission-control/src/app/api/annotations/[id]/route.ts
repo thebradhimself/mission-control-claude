@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import { annotationUpdateSchema } from "@/lib/validations";
-import { updateAnnotation, removeAnnotation } from "@/lib/annotations/storage";
+import { updateAnnotation, removeAnnotation, readAnnotations } from "@/lib/annotations/storage";
+import { readSpec } from "@/lib/specs/storage";
+import { parseSpecSections } from "@/lib/specs/parse";
 import type { Annotation } from "@/lib/types";
 
-type UpdatePatch = Partial<Pick<Annotation, "body" | "status" | "resolvedAt" | "orphanedAt" | "resolvedBy">>;
+type UpdatePatch = Partial<Pick<
+  Annotation,
+  "body" | "status" | "sectionHeading" | "paragraphIndex" | "paragraphHash"
+  | "resolvedAt" | "orphanedAt" | "driftedAt" | "resolvedBy"
+>>;
 
 export async function PATCH(
   req: Request,
@@ -19,7 +25,9 @@ export async function PATCH(
 
   const now = new Date().toISOString();
   const patch: UpdatePatch = {};
+
   if (parsed.body !== undefined) patch.body = parsed.body;
+
   if (parsed.status !== undefined) {
     patch.status = parsed.status;
     if (parsed.status === "resolved") {
@@ -30,6 +38,41 @@ export async function PATCH(
       patch.resolvedBy = null;
       patch.orphanedAt = null;
     }
+  }
+
+  if (parsed.ackDrift) {
+    patch.driftedAt = null;
+  }
+
+  // Re-anchor: section+index → recompute hash from current spec
+  if (parsed.sectionHeading !== undefined && parsed.paragraphIndex !== undefined) {
+    const annotations = await readAnnotations();
+    const target = annotations.find((a) => a.id === id);
+    if (!target) {
+      return NextResponse.json({ error: "Annotation not found" }, { status: 404 });
+    }
+    const spec = await readSpec(target.projectId);
+    if (!spec) {
+      return NextResponse.json({ error: "Spec not found for project" }, { status: 404 });
+    }
+    const sections = parseSpecSections(spec.markdown);
+    const section = sections.find((s) => s.heading === parsed.sectionHeading);
+    if (!section) {
+      return NextResponse.json({ error: "Section not found in spec" }, { status: 404 });
+    }
+    const paragraph = section.paragraphs[parsed.paragraphIndex];
+    if (!paragraph) {
+      return NextResponse.json({ error: "Paragraph not found at index" }, { status: 404 });
+    }
+    patch.sectionHeading = parsed.sectionHeading;
+    patch.paragraphIndex = parsed.paragraphIndex;
+    patch.paragraphHash = paragraph.hash;
+    // Re-anchoring an orphan or drifted annotation reopens it cleanly.
+    patch.status = "open";
+    patch.orphanedAt = null;
+    patch.driftedAt = null;
+    patch.resolvedAt = null;
+    patch.resolvedBy = null;
   }
 
   const updated = await updateAnnotation(id, patch);

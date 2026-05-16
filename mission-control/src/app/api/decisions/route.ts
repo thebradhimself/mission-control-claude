@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { getDecisions, mutateDecisions, mutateActivityLog } from "@/lib/data";
+import { getDecisions, mutateDecisions, mutateActivityLog, getTasks } from "@/lib/data";
 import type { DecisionItem, ActivityEvent } from "@/lib/types";
 import { decisionCreateSchema, decisionUpdateSchema, validateBody, DEFAULT_LIMIT } from "@/lib/validations";
 import { generateId } from "@/lib/utils";
+import { enqueueSpecRegen } from "@/lib/specs/regen-queue";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -121,6 +122,16 @@ export async function PUT(request: Request) {
       };
       logData.events.push(event);
     });
+  }
+
+  if (result.wasAnswered && result.decision.taskId) {
+    try {
+      const tasksData = await getTasks();
+      const linkedTask = tasksData.tasks.find((t) => t.id === result.decision.taskId);
+      if (linkedTask?.projectId) enqueueSpecRegen(linkedTask.projectId);
+    } catch (err) {
+      console.error("[decisions.PUT] enqueueSpecRegen failed:", err);
+    }
   }
 
   return NextResponse.json(result.decision);
