@@ -58,9 +58,16 @@ describe("regen queue", () => {
   });
 
   it("clears the timer entry even when the runner throws", async () => {
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     runnerMock.mockRejectedValueOnce(new Error("boom"));
     enqueueSpecRegen("proj_1");
     await vi.advanceTimersByTimeAsync(REGEN_DEBOUNCE_MS);
+
+    expect(errSpy).toHaveBeenCalledWith(
+      expect.stringContaining("[regen-queue] regen failed for proj_1:"),
+      expect.any(Error),
+    );
+
     // The map entry should have been removed BEFORE the runner ran, so it's gone now.
     expect(_pendingProjectIds()).toEqual([]);
 
@@ -68,5 +75,12 @@ describe("regen queue", () => {
     enqueueSpecRegen("proj_1");
     await vi.advanceTimersByTimeAsync(REGEN_DEBOUNCE_MS);
     expect(runnerMock).toHaveBeenCalledTimes(2);
+
+    errSpy.mockRestore();
+  });
+
+  it("ignores empty-string projectId", () => {
+    enqueueSpecRegen("");
+    expect(_pendingProjectIds()).toEqual([]);
   });
 });
