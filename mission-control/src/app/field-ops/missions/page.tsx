@@ -18,11 +18,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BreadcrumbNav } from "@/components/breadcrumb-nav";
 import { cn } from "@/lib/utils";
-import { useFieldMissions, useFieldTasks } from "@/hooks/use-field-ops";
+import { useFieldMissions, useFieldTasks, useVaultSession } from "@/hooks/use-field-ops";
 import { useProjects } from "@/hooks/use-data";
 import { MissionFormDialog } from "@/components/field-ops/mission-form-dialog";
+import { VaultUnlockDialog } from "@/components/field-ops/vault-unlock-dialog";
 import { GettingStartedCard } from "@/components/field-ops/getting-started-card";
 import type { FieldMissionStatus, AutonomyLevel } from "@/lib/types";
+
+type PendingMission = {
+  title: string;
+  description: string;
+  autonomyLevel: AutonomyLevel;
+  linkedProjectId: string | null;
+};
 
 export const dynamic = "force-dynamic";
 
@@ -79,8 +87,11 @@ export default function MissionsPage() {
   const { missions, loading, create } = useFieldMissions();
   const { tasks } = useFieldTasks();
   const { projects } = useProjects();
+  const vaultSession = useVaultSession();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [formOpen, setFormOpen] = useState(false);
+  const [vaultUnlockOpen, setVaultUnlockOpen] = useState(false);
+  const [pendingMission, setPendingMission] = useState<PendingMission | null>(null);
 
   const filtered = statusFilter === "all"
     ? missions
@@ -94,17 +105,40 @@ export default function MissionsPage() {
     completed: missions.filter((m) => m.status === "completed").length,
   };
 
-  async function handleCreate(data: {
-    title: string;
-    description: string;
-    autonomyLevel: AutonomyLevel;
-    linkedProjectId: string | null;
-  }) {
+  async function handleCreate(data: PendingMission) {
+    // Active missions require owner auth — unlock the vault first if needed
+    if (!vaultSession.active) {
+      setPendingMission(data);
+      setFormOpen(false);
+      setVaultUnlockOpen(true);
+      return;
+    }
     await create({
       ...data,
       status: "active",
       tasks: [],
     } as Partial<typeof missions[0]>);
+  }
+
+  async function handleVaultUnlock(password: string): Promise<boolean> {
+    const success = await vaultSession.unlock(password);
+    if (success && pendingMission) {
+      const data = pendingMission;
+      setPendingMission(null);
+      // Defer create until after dialog has closed
+      setTimeout(async () => {
+        try {
+          await create({
+            ...data,
+            status: "active",
+            tasks: [],
+          } as Partial<typeof missions[0]>);
+        } catch {
+          // create() already surfaces a toast on failure
+        }
+      }, 100);
+    }
+    return success;
   }
 
   return (
@@ -275,6 +309,21 @@ export default function MissionsPage() {
         onOpenChange={setFormOpen}
         projects={projects}
         onSubmit={handleCreate}
+      />
+
+      {/* Vault unlock dialog — required before creating an active mission */}
+      <VaultUnlockDialog
+        open={vaultUnlockOpen}
+        onOpenChange={(open) => {
+          setVaultUnlockOpen(open);
+          if (!open) setPendingMission(null);
+        }}
+        onUnlock={handleVaultUnlock}
+        context={
+          pendingMission
+            ? `Creating mission "${pendingMission.title}" requires vault authentication.`
+            : undefined
+        }
       />
     </div>
   );

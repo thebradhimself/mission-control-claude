@@ -33,12 +33,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BreadcrumbNav } from "@/components/breadcrumb-nav";
 import { MissionFormDialog } from "@/components/field-ops/mission-form-dialog";
+import { VaultUnlockDialog } from "@/components/field-ops/vault-unlock-dialog";
 import { FinancialOverviewCard } from "@/components/field-ops/financial-overview-card";
 import { GettingStartedCard } from "@/components/field-ops/getting-started-card";
 import { apiFetch } from "@/lib/api-client";
 import { showSuccess, showError } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useProjects } from "@/hooks/use-data";
+import { useVaultSession } from "@/hooks/use-field-ops";
 import type {
   AutonomyLevel,
   FieldMission,
@@ -201,7 +203,15 @@ export default function FieldOpsPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [dialogError, setDialogError] = useState("");
   const [missionFormOpen, setMissionFormOpen] = useState(false);
+  const [vaultUnlockOpen, setVaultUnlockOpen] = useState(false);
+  const [pendingMissionData, setPendingMissionData] = useState<{
+    title: string;
+    description: string;
+    autonomyLevel: AutonomyLevel;
+    linkedProjectId: string | null;
+  } | null>(null);
   const { projects } = useProjects();
+  const vaultSession = useVaultSession();
 
   const loadData = useCallback(async () => {
     try {
@@ -247,6 +257,54 @@ export default function FieldOpsPage() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  const submitMissionCreate = useCallback(async (data: {
+    title: string;
+    description: string;
+    autonomyLevel: AutonomyLevel;
+    linkedProjectId: string | null;
+  }) => {
+    const res = await apiFetch("/api/field-ops/missions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...data, status: "active", tasks: [] }),
+    });
+    if (res.ok) {
+      showSuccess("Mission created");
+      loadData();
+    } else {
+      const err = await res.json().catch(() => ({ error: "Failed to create mission" }));
+      showError(err.error ?? "Failed to create mission");
+    }
+  }, [loadData]);
+
+  async function handleMissionFormSubmit(data: {
+    title: string;
+    description: string;
+    autonomyLevel: AutonomyLevel;
+    linkedProjectId: string | null;
+  }) {
+    // Active missions require owner auth — unlock the vault first if needed
+    if (!vaultSession.active) {
+      setPendingMissionData(data);
+      setMissionFormOpen(false);
+      setVaultUnlockOpen(true);
+      return;
+    }
+    await submitMissionCreate(data);
+  }
+
+  async function handleVaultUnlock(password: string): Promise<boolean> {
+    const success = await vaultSession.unlock(password);
+    if (success && pendingMissionData) {
+      const data = pendingMissionData;
+      setPendingMissionData(null);
+      setTimeout(() => {
+        submitMissionCreate(data);
+      }, 100);
+    }
+    return success;
+  }
 
   function handleAutonomyChange(mode: AutonomyLevel) {
     if (mode === approvalConfig.mode || updatingMode) return;
@@ -586,16 +644,22 @@ export default function FieldOpsPage() {
         open={missionFormOpen}
         onOpenChange={setMissionFormOpen}
         projects={projects}
-        onSubmit={async (data) => {
-          const res = await apiFetch("/api/field-ops/missions", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...data, status: "active", tasks: [] }),
-          });
-          if (res.ok) {
-            loadData();
-          }
+        onSubmit={handleMissionFormSubmit}
+      />
+
+      {/* Vault unlock dialog — required before creating an active mission */}
+      <VaultUnlockDialog
+        open={vaultUnlockOpen}
+        onOpenChange={(open) => {
+          setVaultUnlockOpen(open);
+          if (!open) setPendingMissionData(null);
         }}
+        onUnlock={handleVaultUnlock}
+        context={
+          pendingMissionData
+            ? `Creating mission "${pendingMissionData.title}" requires vault authentication.`
+            : undefined
+        }
       />
 
       {/* ═══ Autonomy Change Password Dialog ═══ */}
