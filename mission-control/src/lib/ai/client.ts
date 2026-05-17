@@ -13,7 +13,7 @@ export function getAnthropicClient(): Anthropic {
 }
 
 export const AI_MODEL =
-  process.env.MISSION_CONTROL_AI_MODEL ?? "claude-sonnet-4-6";
+  process.env.MISSION_CONTROL_AI_MODEL || "claude-sonnet-4-6";
 
 export type CachedTextBlock = {
   type: "text";
