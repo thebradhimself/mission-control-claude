@@ -609,6 +609,19 @@ export const chatSendSchema = z.object({
   message: z.string().min(1).max(LIMITS.CHAT_MESSAGE),
 });
 
+export const planTasksSchema = z.object({
+  projectId: z.string().min(1).max(100),
+  clarifications: z
+    .array(
+      z.object({
+        question: z.string().min(1).max(500),
+        answer: z.string().max(2000),
+      }),
+    )
+    .max(3)
+    .optional(),
+});
+
 // ─── Validation helper ─────────────────────────────────────────────────────────
 
 type ValidationSuccess<T> = { success: true; data: T };

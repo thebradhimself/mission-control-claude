@@ -1,10 +1,12 @@
 "use client";
 
-import { Loader2, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Loader2, Sparkles, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatComposer } from "@/components/chat-composer";
 import { ChatMessage } from "@/components/chat-message";
+import { PlanTasksDialog } from "@/components/plan-tasks-dialog";
 import { useChatThread } from "@/hooks/use-chat-thread";
 
 type Props = { projectId: string };
@@ -12,6 +14,7 @@ type Props = { projectId: string };
 export function ChatTab({ projectId }: Props) {
   const { thread, loading, sending, error, send, clear } = useChatThread(projectId);
   const messages = thread?.messages ?? [];
+  const [planOpen, setPlanOpen] = useState(false);
 
   return (
     <div className="flex h-full flex-col">
@@ -19,16 +22,28 @@ export function ChatTab({ projectId }: Props) {
         <span className="text-xs text-muted-foreground tabular-nums">
           {messages.length} message{messages.length === 1 ? "" : "s"}
         </span>
-        {messages.length > 0 && (
+        <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => void clear()}
-            className="h-7 gap-1 text-xs text-muted-foreground hover:text-destructive"
+            onClick={() => setPlanOpen(true)}
+            disabled={messages.length === 0 || sending}
+            title={messages.length === 0 ? "Have a chat first, then plan tasks from it" : "Plan tasks from this conversation"}
+            className="h-7 gap-1 text-xs"
           >
-            <Trash2 className="h-3 w-3" /> Clear
+            <Sparkles className="h-3 w-3" /> Plan tasks
           </Button>
-        )}
+          {messages.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => void clear()}
+              className="h-7 gap-1 text-xs text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="h-3 w-3" /> Clear
+            </Button>
+          )}
+        </div>
       </div>
 
       <ScrollArea className="flex-1 px-3 py-3">
@@ -59,6 +74,12 @@ export function ChatTab({ projectId }: Props) {
       )}
 
       <ChatComposer onSend={send} sending={sending} disabled={loading} />
+
+      <PlanTasksDialog
+        open={planOpen}
+        onOpenChange={setPlanOpen}
+        projectId={projectId}
+      />
     </div>
   );
 }
